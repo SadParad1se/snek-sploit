@@ -29,10 +29,12 @@ msfrpcd -U msf -P root
 
 More information can be found in the [official documentation](https://docs.rapid7.com/metasploit/rpc-api/).
 
-## Running MSF with RPC using Docker
-In case you don't want to install and run MSF RPC on your own:
+## Running MSF with RPC using Docker Compose
+Make sure you've installed [Docker Compose](https://docs.docker.com/compose/install/).
+
+In case you don't want to set up MSF RPC on your own, here is a convenient Compose config with MSF RPC and database:
 ```shell
-docker run --rm --network host --tty -d -e MSF_RPC_USERNAME=msf -e MSF_RPC_PASSWORD=root registry.gitlab.ics.muni.cz:443/cryton/configurations/metasploit-framework:latest
+docker compose up -d
 ```
 
 [Link to the documentation](https://cryton.gitlab-pages.ics.muni.cz/cryton-documentation/latest/docker-settings/#metasploit-framework).
