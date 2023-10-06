@@ -24,7 +24,7 @@ load msgrpc ServerHost=127.0.0.1 ServerPort=55553 User=msf Pass='root' SSL=true
 
 In the background
 ```shell
-msfrpcd -U username -P password
+msfrpcd -U msf -P root
 ```
 
 More information can be found in the [official documentation](https://docs.rapid7.com/metasploit/rpc-api/).
