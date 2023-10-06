@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "snek-sploit"
+version = "0.1.0"
+description = "Python RPC client for Metasploit Framework"
+authors = [
+    "Jiří Rája <jiri.raja@gmail.com>"
+]
+maintainers = [
+    "Jiří Rája <jiri.raja@gmail.com>"
+]
+license = "MIT"
+homepage = "https://github.com/SadParad1se/snek-sploit"
+repository = "https://github.com/SadParad1se/snek-sploit"
+keywords = [
+    "metasploit", "msf", "rpc", "client"
+]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+requests = "^2.31.0"
+msgpack = "^1.0.7"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
