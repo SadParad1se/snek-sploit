@@ -1,6 +1,8 @@
 # snek-sploit
 Python RPC client for Metasploit Framework.
 
+![](logo.png)
+
 ```python
 from snek_sploit import Client, api
 
