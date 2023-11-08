@@ -12,7 +12,11 @@ class Context:
 
         self.url = f"http{'s' if ssl else ''}://{host}:{port}{uri}"
         self.headers = {"Content-type": "binary/message-pack"}
-        self.certificate = certificate if certificate != "" else False  # MSF self-signed certificate; Where to get it?
+        # MSF self-signed certificate;
+        # TODO: https://github.com/rapid7/metasploit-framework/issues/15569#issuecomment-901158008
+        #  From the msfrpc -h ...
+        #  -c   (JSON-RPC) Path to certificate (default: /root/.msf4/msf-ws-cert.pem)
+        self.certificate = certificate if certificate != "" else False
 
         self.token = token
 
