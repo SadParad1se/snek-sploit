@@ -32,8 +32,9 @@ class Context:
         data = msgpack.dumps([endpoint, *arguments])
         request = requests.post(self.url, data, headers=self.headers, verify=self.certificate)
         response = msgpack.loads(request.content)
-        print(response)
+        print(response)  # TODO: remove, only for quick and dirty debugging
 
-        if response.get(constants.ERROR):
-            raise Exception(response.get())
+        if response.get(constants.ERROR) is not None:
+            raise Exception(response)
+
         return response

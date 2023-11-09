@@ -1,5 +1,5 @@
-from snek_sploit import Client, api
+from snek_sploit import Client
 
 if __name__ == '__main__':
     client = Client("msf", "root")
-    print(client.call(api.SESSION_LIST))
+    print(client.auth.token_list())
