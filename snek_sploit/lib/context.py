@@ -16,8 +16,6 @@ class Context:
         # TODO: https://github.com/rapid7/metasploit-framework/issues/15569#issuecomment-901158008
         #  From the msfrpc -h ...
         #  -c   (JSON-RPC) Path to certificate (default: /root/.msf4/msf-ws-cert.pem)
-        # TODO: Optionally allow ignoring of the cert
-        #  https://stackoverflow.com/a/28002687
         self.certificate = certificate if certificate != "" else False
 
         self.token = token
