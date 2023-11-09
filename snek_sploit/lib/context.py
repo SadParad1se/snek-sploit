@@ -1,7 +1,7 @@
 import requests
 import msgpack
 
-from snek_sploit.util import api
+from snek_sploit.util import api, constants
 
 
 class Context:
@@ -31,4 +31,9 @@ class Context:
 
         data = msgpack.dumps([endpoint, *arguments])
         request = requests.post(self.url, data, headers=self.headers, verify=self.certificate)
-        return msgpack.loads(request.content)
+        response = msgpack.loads(request.content)
+        print(response)
+
+        if response.get(constants.ERROR):
+            raise Exception(response.get())
+        return response
