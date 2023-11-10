@@ -2,6 +2,7 @@ import urllib3
 
 from snek_sploit.lib.context import Context
 from snek_sploit.lib.auth import Auth
+from snek_sploit.lib.console import Console
 
 
 class Client:
@@ -13,6 +14,7 @@ class Client:
 
         self.context = Context(username, password, host, port, uri, ssl, certificate, token)
         self.auth = Auth(self.context)
+        self.console = Console(self.context)
 
         if log_in:
             self.login()

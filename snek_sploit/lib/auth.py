@@ -14,7 +14,7 @@ class Auth(Base):
         :return: Token used for the login
         :full response example: {b'result': b'success', b'token': b'TEMPYggAMQ7ju8z93UzZCrN6Ecx7BHWW'}
         """
-        response = self.context.call(api.AUTH_LOGIN, [username, password])
+        response = self._context.call(api.AUTH_LOGIN, [username, password])
 
         return response[constants.TOKEN].decode()
 
@@ -25,7 +25,7 @@ class Auth(Base):
         :return: True in case the logout was successful
         :full response example: {b'result': b'success'}
         """
-        response = self.context.call(api.AUTH_LOGOUT, [token])
+        response = self._context.call(api.AUTH_LOGOUT, [token])
 
         return response[constants.RESULT] == constants.SUCCESS
 
@@ -35,7 +35,7 @@ class Auth(Base):
         :return: List of the existing tokens
         :full response example: {b'tokens': [b'TEMPd3GhuK6Nc0YCeS38oBpT0ZIG6VZs']}
         """
-        response = self.context.call(api.AUTH_TOKEN_LIST)
+        response = self._context.call(api.AUTH_TOKEN_LIST)
 
         return response[constants.TOKENS]
 
@@ -46,7 +46,7 @@ class Auth(Base):
         :return: True in case the token was added
         :full response example: {b'result': b'success'}
         """
-        response = self.context.call(api.AUTH_TOKEN_ADD, [token])
+        response = self._context.call(api.AUTH_TOKEN_ADD, [token])
 
         return response[constants.RESULT] == constants.SUCCESS
 
@@ -56,7 +56,7 @@ class Auth(Base):
         :return: New token
         :full response example: {b'result': b'success', b'token': b'TEMP6120290898789284108532566914'}
         """
-        response = self.context.call(api.AUTH_TOKEN_GENERATE)
+        response = self._context.call(api.AUTH_TOKEN_GENERATE)
 
         return response[constants.TOKEN]
 
@@ -67,6 +67,6 @@ class Auth(Base):
         :return: True in case the removal was successful
         :full response example: {b'result': b'success'}
         """
-        response = self.context.call(api.AUTH_TOKEN_REMOVE, [token])
+        response = self._context.call(api.AUTH_TOKEN_REMOVE, [token])
 
         return response[constants.RESULT] == constants.SUCCESS

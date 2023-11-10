@@ -5,4 +5,4 @@ from snek_sploit.lib.context import Context
 
 class Base(ABC):
     def __init__(self, context: Context):
-        self.context = context
+        self._context = context
