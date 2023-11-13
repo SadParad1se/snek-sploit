@@ -1,8 +1,7 @@
 import urllib3
 
 from snek_sploit.lib.context import Context
-from snek_sploit.lib.auth import Auth
-from snek_sploit.lib.console import Console
+from snek_sploit.lib.groups import Auth, Console, Core, DB, Health, Job, Module, Plugin, Session
 
 
 class Client:
@@ -15,6 +14,13 @@ class Client:
         self.context = Context(username, password, host, port, uri, ssl, certificate, token)
         self.auth = Auth(self.context)
         self.console = Console(self.context)
+        self.core = Core(self.context)
+        self.db = DB(self.context)
+        self.health = Health(self.context)
+        self.job = Job(self.context)
+        self.module = Module(self.context)
+        self.plugin = Plugin(self.context)
+        self.session = Session(self.context)
 
         if log_in:
             self.login()
