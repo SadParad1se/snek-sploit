@@ -1,7 +1,7 @@
 import requests
 import msgpack
 
-from snek_sploit.util import api, constants
+from snek_sploit.util import constants
 
 
 class Context:
@@ -19,14 +19,16 @@ class Context:
         #  -c   (JSON-RPC) Path to certificate (default: /root/.msf4/msf-ws-cert.pem)
         self._certificate = certificate if certificate != "" else False
 
-    def call(self, endpoint: str, arguments: list = None) -> dict:
-        if arguments is None:
-            arguments = []
+    def _create_arguments(self, call_arguments: list, use_token: bool) -> list:
+        arguments = [self.token] if use_token else []
 
-        if endpoint != api.AUTH_LOGIN:
-            arguments = [self.token, *arguments]
+        if call_arguments is not None:
+            arguments += call_arguments
 
-        data = msgpack.dumps([endpoint, *arguments])
+        return arguments
+
+    def call(self, endpoint: str, arguments: list = None, use_token: bool = True) -> dict:
+        data = msgpack.dumps([endpoint, *self._create_arguments(arguments, use_token)])
         request = requests.post(self._url, data, headers=self._headers, verify=self._certificate)
         response = msgpack.loads(request.content)
         print(response)  # TODO: remove, only for quick and dirty debugging

@@ -1,11 +1,18 @@
 from snek_sploit.lib.base import Base
-from snek_sploit.util import api, constants
+from snek_sploit.util import constants
 
 
 class RPCAuth(Base):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Auth.html
     """
+    LOGIN = "auth.login"
+    LOGOUT = "auth.logout"
+    TOKEN_LIST = "auth.token_list"
+    TOKEN_ADD = "auth.token_add"
+    TOKEN_GENERATE = "auth.token_generate"
+    TOKEN_REMOVE = "auth.token_remove"
+
     def login(self, username: str, password: str) -> str:
         """
         Authenticate the client using the provided credentials.
@@ -14,7 +21,7 @@ class RPCAuth(Base):
         :return: Token used for the login
         :full response example: {b'result': b'success', b'token': b'TEMPYggAMQ7ju8z93UzZCrN6Ecx7BHWW'}
         """
-        response = self._context.call(api.AUTH_LOGIN, [username, password])
+        response = self._context.call(self.LOGIN, [username, password], False)
 
         return response[constants.TOKEN].decode()
 
@@ -25,7 +32,7 @@ class RPCAuth(Base):
         :return: True in case the logout was successful
         :full response example: {b'result': b'success'}
         """
-        response = self._context.call(api.AUTH_LOGOUT, [token])
+        response = self._context.call(self.LOGOUT, [token])
 
         return response[constants.RESULT] == constants.SUCCESS
 
@@ -35,7 +42,7 @@ class RPCAuth(Base):
         :return: List of the existing tokens
         :full response example: {b'tokens': [b'TEMPd3GhuK6Nc0YCeS38oBpT0ZIG6VZs']}
         """
-        response = self._context.call(api.AUTH_TOKEN_LIST)
+        response = self._context.call(self.TOKEN_LIST)
 
         return response[constants.TOKENS]
 
@@ -46,7 +53,7 @@ class RPCAuth(Base):
         :return: True in case the token was added
         :full response example: {b'result': b'success'}
         """
-        response = self._context.call(api.AUTH_TOKEN_ADD, [token])
+        response = self._context.call(self.TOKEN_ADD, [token])
 
         return response[constants.RESULT] == constants.SUCCESS
 
@@ -56,7 +63,7 @@ class RPCAuth(Base):
         :return: New token
         :full response example: {b'result': b'success', b'token': b'TEMP6120290898789284108532566914'}
         """
-        response = self._context.call(api.AUTH_TOKEN_GENERATE)
+        response = self._context.call(self.TOKEN_GENERATE)
 
         return response[constants.TOKEN]
 
@@ -67,6 +74,6 @@ class RPCAuth(Base):
         :return: True in case the removal was successful
         :full response example: {b'result': b'success'}
         """
-        response = self._context.call(api.AUTH_TOKEN_REMOVE, [token])
+        response = self._context.call(self.TOKEN_REMOVE, [token])
 
         return response[constants.RESULT] == constants.SUCCESS

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from snek_sploit.lib.base import Base
-from snek_sploit.util import api, constants
+from snek_sploit.util import constants
 
 
 @dataclass
@@ -16,6 +16,15 @@ class RPCConsole(Base):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Console.html
     """
+    CREATE = "console.create"
+    LIST = "console.list"
+    DESTROY = "console.destroy"
+    READ = "console.read"
+    WRITE = "console.write"
+    TABS = "console.tabs"
+    SESSION_KILL = "console.session_kill"
+    SESSION_DETACH = "console.session_detach"
+
     @staticmethod
     def _parse_console_data(response: dict) -> ConsoleInfo:
         """
@@ -42,7 +51,7 @@ class RPCConsole(Base):
         if options is None:
             options = {}
 
-        response = self._context.call(api.CONSOLE_CREATE, [options])
+        response = self._context.call(self.CREATE, [options])
 
         return self._parse_console_data(response)
 
@@ -52,7 +61,7 @@ class RPCConsole(Base):
         :return:
         :full response example: {b'consoles': [{b'id': '1', b'prompt': b'msf6 > ', b'busy': False}]}
         """
-        response = self._context.call(api.CONSOLE_LIST)
+        response = self._context.call(self.LIST)
 
         consoles = []
         for console in response[constants.CONSOLES]:
@@ -67,7 +76,7 @@ class RPCConsole(Base):
         :return:
         :full response example: {b'result': b'success'}
         """
-        response = self._context.call(api.CONSOLE_DESTROY, [console_id])
+        response = self._context.call(self.DESTROY, [console_id])
 
         if response[constants.RESULT] == constants.FAILURE:
             raise Exception("Invalid console ID")
@@ -81,7 +90,7 @@ class RPCConsole(Base):
         :return:
         :full response example: {b'data': b"... https://docs.metasploit.com/\n\n", b'prompt': b'msf6 > ', b'busy': True}
         """
-        response = self._context.call(api.CONSOLE_READ, [console_id])
+        response = self._context.call(self.READ, [console_id])
 
         if response.get(constants.RESULT) == constants.FAILURE:
             raise Exception("Invalid console ID")
@@ -98,7 +107,7 @@ class RPCConsole(Base):
         """
         data += "\r\n"
 
-        response = self._context.call(api.CONSOLE_WRITE, [console_id, data])
+        response = self._context.call(self.WRITE, [console_id, data])
 
         if response.get(constants.RESULT) == constants.FAILURE:
             raise Exception("Invalid console ID")
@@ -113,7 +122,7 @@ class RPCConsole(Base):
         :return:
         :full response example: {b'tabs': [b'use exploit/windows/smb/ms08_067_netapi']}
         """
-        response = self._context.call(api.CONSOLE_TABS, [console_id, line])
+        response = self._context.call(self.TABS, [console_id, line])
 
         if response.get(constants.RESULT) == constants.FAILURE:
             raise Exception("Invalid console ID")
@@ -127,7 +136,7 @@ class RPCConsole(Base):
         :return:
         :full response example: {b'result': b'success'}
         """
-        response = self._context.call(api.CONSOLE_SESSION_KILL, [console_id])
+        response = self._context.call(self.SESSION_KILL, [console_id])
 
         if response[constants.RESULT] == constants.FAILURE:
             raise Exception("Invalid console ID")
@@ -141,7 +150,7 @@ class RPCConsole(Base):
         :return:
         :full response example: {b'result': b'success'}
         """
-        response = self._context.call(api.CONSOLE_SESSION_DETACH, [console_id])
+        response = self._context.call(self.SESSION_DETACH, [console_id])
 
         if response[constants.RESULT] == constants.FAILURE:
             raise Exception("Invalid console ID")
