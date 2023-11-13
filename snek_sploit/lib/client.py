@@ -26,9 +26,7 @@ class Client:
             self.login()
 
     def login(self):
-        token = self.auth.rpc.login(self.context.username, self.context.password)
-        self.context.token = token
-        self.auth.rpc.token_add(token)
+        self.auth.login()
 
     def logout(self):
         self.auth.rpc.logout(self.context.token)
