@@ -20,12 +20,12 @@ class Client:
             self.login()
 
     def login(self):
-        token = self.auth.login(self.context.username, self.context.password)
+        token = self.auth.rpc.login(self.context.username, self.context.password)
         self.context.token = token
-        self.auth.token_add(token)
+        self.auth.rpc.token_add(token)
 
     def logout(self):
-        self.auth.logout(self.context.token)
+        self.auth.rpc.logout(self.context.token)
 
     def call(self, endpoint: str, arguments: list = None) -> dict:
         return self.context.call(endpoint, arguments)
