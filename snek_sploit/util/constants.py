@@ -27,6 +27,7 @@ STARTED = "started"  # str (datetime Y-m-d H:m:s TZ) | (2023-11-13 08:47:35 +000
 # Response values
 SUCCESS = b"success"  # -
 FAILURE = b"failure"  # -
+UP = b"UP"  # -
 
 # Error response keys
 ERROR = "error"  # bool
