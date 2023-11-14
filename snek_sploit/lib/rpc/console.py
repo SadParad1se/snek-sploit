@@ -43,8 +43,8 @@ class RPCConsole(Base):
     https://docs.metasploit.com/api/Msf/RPC/RPC_Console.html
     """
     CREATE = "console.create"
-    LIST = "console.list"
     DESTROY = "console.destroy"
+    LIST = "console.list"
     READ = "console.read"
     WRITE = "console.write"
     TABS = "console.tabs"
@@ -90,20 +90,6 @@ class RPCConsole(Base):
 
         return self._parse_console_info(response)
 
-    def list_consoles(self) -> list[ConsoleInfo]:
-        """
-        List framework consoles.
-        :return: List of framework consoles
-        :full response example: {b'consoles': [{b'id': '1', b'prompt': b'msf6 > ', b'busy': False}]}
-        """
-        response = self._context.call(self.LIST)
-
-        consoles = []
-        for console in response[constants.CONSOLES]:
-            consoles.append(self._parse_console_info(console))
-
-        return consoles
-
     def destroy(self, console_id: int) -> bool:
         """
         Delete a framework console instance.
@@ -117,6 +103,20 @@ class RPCConsole(Base):
             raise Exception("Invalid console ID")
 
         return response[constants.RESULT] == constants.SUCCESS
+
+    def list_consoles(self) -> list[ConsoleInfo]:
+        """
+        List framework consoles.
+        :return: List of framework consoles
+        :full response example: {b'consoles': [{b'id': '1', b'prompt': b'msf6 > ', b'busy': False}]}
+        """
+        response = self._context.call(self.LIST)
+
+        consoles = []
+        for console in response[constants.CONSOLES]:
+            consoles.append(self._parse_console_info(console))
+
+        return consoles
 
     def read(self, console_id: int) -> ConsoleData:
         """

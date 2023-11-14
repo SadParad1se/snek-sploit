@@ -42,9 +42,9 @@ class RPCCore(Base):
     SETG = "core.setg"
     UNSETG = "core.unsetg"
     SAVE = "core.save"
-    RELOAD_MODULES = "core.reload_modules"
-    ADD_MODULE_PATH = "core.add_module_path"
     MODULE_STATS = "core.module_stats"
+    ADD_MODULE_PATH = "core.add_module_path"
+    RELOAD_MODULES = "core.reload_modules"
     THREAD_LIST = "core.thread_list"
     THREAD_KILL = "core.thread_kill"
 
@@ -172,16 +172,16 @@ class RPCCore(Base):
 
         return response[constants.RESULT] == constants.SUCCESS
 
-    def reload_modules(self) -> ModuleStatistics:
+    def module_stats(self) -> ModuleStatistics:
         """
-        Reload framework modules.
+        Get module stats.
         :return: Module statistics
         :full response example:
             {b'exploits': 2346, b'auxiliary': 1220, b'post': 413, b'encoders': 46, b'nops': 11, b'payloads': 1387,
              b'evasions': 9}
         """
-        response = self._context.call(self.RELOAD_MODULES, [])
-        
+        response = self._context.call(self.MODULE_STATS, [])
+
         return self._parse_module_statistics(response)
 
     def add_module_path(self, path: str) -> ModuleStatistics:
@@ -197,15 +197,15 @@ class RPCCore(Base):
 
         return self._parse_module_statistics(response)
 
-    def module_stats(self) -> ModuleStatistics:
+    def reload_modules(self) -> ModuleStatistics:
         """
-        Get module stats.
+        Reload framework modules.
         :return: Module statistics
         :full response example:
             {b'exploits': 2346, b'auxiliary': 1220, b'post': 413, b'encoders': 46, b'nops': 11, b'payloads': 1387,
              b'evasions': 9}
         """
-        response = self._context.call(self.MODULE_STATS, [])
+        response = self._context.call(self.RELOAD_MODULES, [])
 
         return self._parse_module_statistics(response)
 

@@ -8,10 +8,10 @@ class RPCAuth(Base):
     """
     LOGIN = "auth.login"
     LOGOUT = "auth.logout"
-    TOKEN_LIST = "auth.token_list"
     TOKEN_ADD = "auth.token_add"
-    TOKEN_GENERATE = "auth.token_generate"
     TOKEN_REMOVE = "auth.token_remove"
+    TOKEN_LIST = "auth.token_list"
+    TOKEN_GENERATE = "auth.token_generate"
 
     def login(self, username: str, password: str) -> str:
         """
@@ -21,7 +21,7 @@ class RPCAuth(Base):
         :return: Token used for the login
         :full response example: {b'result': b'success', b'token': b'TEMPYggAMQ7ju8z93UzZCrN6Ecx7BHWW'}
         """
-        response = self._context.call(self.LOGIN, [username, password], False)
+        response = self._context.call(self.LOGIN, [username, password], use_token=False)
 
         return response[constants.TOKEN].decode()
 
@@ -36,16 +36,6 @@ class RPCAuth(Base):
 
         return response[constants.RESULT] == constants.SUCCESS
 
-    def token_list(self) -> list[str]:
-        """
-        List existing tokens.
-        :return: List of the existing tokens
-        :full response example: {b'tokens': [b'TEMPd3GhuK6Nc0YCeS38oBpT0ZIG6VZs']}
-        """
-        response = self._context.call(self.TOKEN_LIST)
-
-        return response[constants.TOKENS]
-
     def token_add(self, token: str) -> bool:
         """
         Add a token into the database.
@@ -57,16 +47,6 @@ class RPCAuth(Base):
 
         return response[constants.RESULT] == constants.SUCCESS
 
-    def token_generate(self) -> str:
-        """
-        Generate a new token and save it to the Database.
-        :return: New token
-        :full response example: {b'result': b'success', b'token': b'TEMP6120290898789284108532566914'}
-        """
-        response = self._context.call(self.TOKEN_GENERATE)
-
-        return response[constants.TOKEN]
-
     def token_remove(self, token: str) -> bool:
         """
         Remove an existing token.
@@ -77,3 +57,23 @@ class RPCAuth(Base):
         response = self._context.call(self.TOKEN_REMOVE, [token])
 
         return response[constants.RESULT] == constants.SUCCESS
+
+    def token_list(self) -> list[str]:
+        """
+        List existing tokens.
+        :return: List of the existing tokens
+        :full response example: {b'tokens': [b'TEMPd3GhuK6Nc0YCeS38oBpT0ZIG6VZs']}
+        """
+        response = self._context.call(self.TOKEN_LIST)
+
+        return response[constants.TOKENS]
+
+    def token_generate(self) -> str:
+        """
+        Generate a new token and save it to the Database.
+        :return: New token
+        :full response example: {b'result': b'success', b'token': b'TEMP6120290898789284108532566914'}
+        """
+        response = self._context.call(self.TOKEN_GENERATE)
+
+        return response[constants.TOKEN]
