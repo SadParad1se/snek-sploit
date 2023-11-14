@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 
 from snek_sploit.lib.base import Base
 from snek_sploit.util import constants
@@ -16,6 +16,26 @@ class ConsoleData:
     prompt: bytes
     busy: bool
     data: bytes
+
+
+@dataclass
+class ConsoleOptions:
+    """
+    Options used to initialize the console.
+    Only the relevant options are mentioned here, since some are always modified by the MSF.
+    Sources:
+    https://github.com/rapid7/metasploit-framework/blob/master/lib/msf/ui/web/web_console.rb#L46C10-L46C10
+    https://github.com/rapid7/metasploit-framework/blob/master/lib/msf/ui/console/driver.rb
+    """
+    workspace: str = None  # Use a workspace
+    Readline: bool = None  # Whether to use the readline or not
+    RealReadline: bool = None  # Whether to use the system's readline library instead of RBReadline
+    HistFile: str = None  # Path to a file where we can store command history
+    Config: str = None  # Path to the config file
+    ConfirmExit: bool = None  # Whether to confirm before exiting
+    XCommands: list[str] = None  # Additional startup commands
+    DisableBanner: bool = None  # Whether to disable the banner on startup
+    Plugins: list[str] = None  # Plugins to load
 
 
 class RPCConsole(Base):
@@ -57,17 +77,14 @@ class RPCConsole(Base):
             response[constants.DATA]
         )
 
-    def create(self, options: dict = None) -> ConsoleInfo:
+    def create(self, options: ConsoleOptions = None) -> ConsoleInfo:
         """
         Create a new framework console instance.
         :param options: Options used for creating the console
         :return: Information about the console
         :full response example: {b'id': '3', b'prompt': b'', b'busy': False}
         """
-        # TODO: what options are supported?
-        #  https://github.com/rapid7/metasploit-framework/blob/6659684fdf9e669b786c2ec15007b15d56219c4c/lib/msf/ui/web/web_console.rb#L46C10-L46C10
-        if options is None:
-            options = {}
+        options = asdict(options) if options is not None else {}
 
         response = self._context.call(self.CREATE, [options])
 
