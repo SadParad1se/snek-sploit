@@ -4,11 +4,11 @@ Python RPC client for Metasploit Framework.
 ![](logo.png)
 
 ```python
-from snek_sploit import Client, api
+from snek_sploit import Client
 
 if __name__ == '__main__':
     client = Client("msf", "root")
-    print(client.call(api.SESSION_LIST))
+    print(client.core.rpc.version())
 
 ```
 
@@ -48,4 +48,5 @@ docker compose up -d
 
 ## TODO
 async vs sync version?
-Consistent types from the responses?
+Consistent types from the responses
+Add custom exceptions

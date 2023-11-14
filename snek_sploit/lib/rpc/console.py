@@ -55,7 +55,7 @@ class RPCConsole(Base):
     def _parse_console_info(response: dict) -> ConsoleInfo:
         """
         Get console information from the response.
-        :param response: Response containing information about the console
+        :param response: API response containing the necessary data
         :return: Information about the console
         """
         return ConsoleInfo(
@@ -68,7 +68,7 @@ class RPCConsole(Base):
     def _parse_console_data(response: dict) -> ConsoleData:
         """
         Get console data from the response.
-        :param response: Response containing information and data about the console
+        :param response: API response containing the necessary data
         :return: Information about the console and its data
         """
         return ConsoleData(

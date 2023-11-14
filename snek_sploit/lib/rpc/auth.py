@@ -29,7 +29,7 @@ class RPCAuth(Base):
         """
         Logout and remove (temporary) token.
         :param token: Token used by the client
-        :return: True in case the logout was successful
+        :return: True in case of success
         :full response example: {b'result': b'success'}
         """
         response = self._context.call(self.LOGOUT, [token])
@@ -50,7 +50,7 @@ class RPCAuth(Base):
         """
         Add a token into the database.
         :param token: Token to add
-        :return: True in case the token was added
+        :return: True in case of success
         :full response example: {b'result': b'success'}
         """
         response = self._context.call(self.TOKEN_ADD, [token])
@@ -71,7 +71,7 @@ class RPCAuth(Base):
         """
         Remove an existing token.
         :param token: Token to remove
-        :return: True in case the removal was successful
+        :return: True in case of success
         :full response example: {b'result': b'success'}
         """
         response = self._context.call(self.TOKEN_REMOVE, [token])

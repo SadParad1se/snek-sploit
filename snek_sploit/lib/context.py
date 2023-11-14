@@ -1,18 +1,20 @@
 import requests
 import msgpack
+from typing import Union
 
 from snek_sploit.util import constants
 
 
 class Context:
     def __init__(self, username: str, password: str, host: str = "127.0.0.1", port: int = 55553, uri: str = "/api/",
-                 ssl: bool = True, certificate: str = "", token: str = ""):
+                 ssl: bool = True, certificate: str = "", token: str = "", timeout: Union[float, tuple] = None):
         self.username = username
         self.password = password
         self.token = token
 
         self._url = f"http{'s' if ssl else ''}://{host}:{port}{uri}"
         self._headers = {"Content-type": "binary/message-pack"}
+        self.timeout = timeout
         # MSF self-signed certificate
         # TODO: https://github.com/rapid7/metasploit-framework/issues/15569#issuecomment-901158008
         #  From the msfrpc -h ...
@@ -27,10 +29,14 @@ class Context:
 
         return arguments
 
-    def call(self, endpoint: str, arguments: list = None, use_token: bool = True) -> dict:
+    def call(self, endpoint: str, arguments: list = None, use_token: bool = True,
+             timeout: Union[float, tuple] = None) -> dict:
+        if timeout is None:
+            timeout = self.timeout
+
         data = msgpack.dumps([endpoint, *self._create_arguments(arguments, use_token)])
-        request = requests.post(self._url, data, headers=self._headers, verify=self._certificate)
-        response = msgpack.loads(request.content)
+        request = requests.post(self._url, data, headers=self._headers, verify=self._certificate, timeout=timeout)
+        response = msgpack.loads(request.content, strict_map_key=False)
         print(response)  # TODO: remove, only for quick and dirty debugging
 
         if response.get(constants.ERROR) is not None:
