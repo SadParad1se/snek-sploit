@@ -7,16 +7,16 @@ from snek_sploit.util import constants
 
 @dataclass
 class ConsoleInfo:
-    id: str
-    prompt: bytes
+    id: int
+    prompt: str
     busy: bool
 
 
 @dataclass
 class ConsoleData:
-    prompt: bytes
+    prompt: str
     busy: bool
-    data: bytes
+    data: List[str]
 
 
 @dataclass
@@ -60,8 +60,8 @@ class RPCConsole(Base):
         :return: Information about the console
         """
         return ConsoleInfo(
-            response[constants.ID],
-            response[constants.PROMPT],
+            int(response[constants.ID]),
+            response[constants.PROMPT].decode(),
             response[constants.BUSY]
         )
 
@@ -73,9 +73,9 @@ class RPCConsole(Base):
         :return: Information about the console and its data
         """
         return ConsoleData(
-            response[constants.PROMPT],
+            response[constants.PROMPT].decode(),
             response[constants.BUSY],
-            response[constants.DATA]
+            [data.decode() for data in response[constants.DATA]]
         )
 
     def create(self, options: ConsoleOptions = None) -> ConsoleInfo:
@@ -150,7 +150,7 @@ class RPCConsole(Base):
 
         return response[constants.WROTE]
 
-    def tabs(self, console_id: int, line: str) -> List[bytes]:
+    def tabs(self, console_id: int, line: str) -> List[str]:
         """
         Get tab-completed version of your input (such as a module path).
         :param console_id: ID of the console
@@ -163,7 +163,7 @@ class RPCConsole(Base):
         if response.get(constants.RESULT) == constants.FAILURE:
             raise Exception("Invalid console ID")
 
-        return response[constants.TABS]
+        return [tab.decode() for tab in response[constants.TABS]]
 
     def session_kill(self, console_id: int) -> bool:
         """

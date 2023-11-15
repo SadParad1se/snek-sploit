@@ -68,7 +68,7 @@ class RPCAuth(Base):
         """
         response = self._context.call(self.TOKEN_LIST)
 
-        return response[constants.TOKENS]
+        return [token.decode() for token in response[constants.TOKENS]]
 
     def token_generate(self) -> str:
         """
@@ -78,4 +78,4 @@ class RPCAuth(Base):
         """
         response = self._context.call(self.TOKEN_GENERATE)
 
-        return response[constants.TOKEN]
+        return response[constants.TOKEN].decode()
