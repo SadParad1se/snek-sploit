@@ -14,6 +14,6 @@ class RPCHealth(Base):
         :return: True in case of success
         :full response example: {'status': b'UP'}
         """
-        response = self._context.call(self.CHECK, [], use_token=False)
+        response = self._context.call(self.CHECK, use_token=False)
 
         return response[constants.STATUS] == constants.UP

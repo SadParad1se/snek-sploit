@@ -99,7 +99,7 @@ class RPCCore(Base):
         :full response example:
             {b'version': '6.3.31-dev', b'ruby': b'3.0.5 x86_64-linux-musl 2022-11-24', b'api': b'1.0'}
         """
-        response = self._context.call(self.VERSION, [])
+        response = self._context.call(self.VERSION)
 
         return self._parse_version(response)
 
@@ -113,7 +113,7 @@ class RPCCore(Base):
         timeout = (context_timeout[0] if isinstance(context_timeout, tuple) else context_timeout, 0.001)
 
         try:
-            self._context.call(self.STOP, [], timeout=timeout)
+            self._context.call(self.STOP, timeout=timeout)
         except ReadTimeout:
             pass
 
@@ -168,7 +168,7 @@ class RPCCore(Base):
         :return: True in case of success
         :full response example: {b'result': b'success'}
         """
-        response = self._context.call(self.SAVE, [])
+        response = self._context.call(self.SAVE)
 
         return response[constants.RESULT] == constants.SUCCESS
 
@@ -180,7 +180,7 @@ class RPCCore(Base):
             {b'exploits': 2346, b'auxiliary': 1220, b'post': 413, b'encoders': 46, b'nops': 11, b'payloads': 1387,
              b'evasions': 9}
         """
-        response = self._context.call(self.MODULE_STATS, [])
+        response = self._context.call(self.MODULE_STATS)
 
         return self._parse_module_statistics(response)
 
@@ -205,7 +205,7 @@ class RPCCore(Base):
             {b'exploits': 2346, b'auxiliary': 1220, b'post': 413, b'encoders': 46, b'nops': 11, b'payloads': 1387,
              b'evasions': 9}
         """
-        response = self._context.call(self.RELOAD_MODULES, [])
+        response = self._context.call(self.RELOAD_MODULES)
 
         return self._parse_module_statistics(response)
 
@@ -217,7 +217,7 @@ class RPCCore(Base):
             {0: {'status': b'sleep', 'critical': True, 'name': 'MetasploitRPCServer',
                  'started': '2023-11-13 08:47:35 +0000'}}
         """
-        response = self._context.call(self.THREAD_LIST, [])
+        response = self._context.call(self.THREAD_LIST)
 
         return {thread_id: self._parse_framework_thread(thread) for thread_id, thread in response.items()}
 

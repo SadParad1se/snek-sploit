@@ -23,6 +23,7 @@ STATUS = "status"  # bytes
 CRITICAL = "critical"  # bool
 NAME = "name"  # str
 STARTED = "started"  # str (datetime Y-m-d H:m:s TZ) | (2023-11-13 08:47:35 +0000)
+PLUGINS = "plugins"  # list[str]
 
 # Response values
 SUCCESS = b"success"  # -
