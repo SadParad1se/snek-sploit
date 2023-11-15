@@ -1,3 +1,5 @@
+from typing import List
+
 from snek_sploit.lib.base import Base
 from snek_sploit.util import constants
 
@@ -58,7 +60,7 @@ class RPCAuth(Base):
 
         return response[constants.RESULT] == constants.SUCCESS
 
-    def token_list(self) -> list[str]:
+    def token_list(self) -> List[str]:
         """
         List existing tokens.
         :return: List of the existing tokens

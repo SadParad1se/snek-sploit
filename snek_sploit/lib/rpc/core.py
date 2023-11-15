@@ -1,6 +1,6 @@
 from requests import ReadTimeout
 from dataclasses import dataclass
-from typing import Union
+from typing import Union, Dict
 
 from snek_sploit.lib.base import Base
 from snek_sploit.util import constants
@@ -49,7 +49,7 @@ class RPCCore(Base):
     THREAD_KILL = "core.thread_kill"
 
     @staticmethod
-    def _parse_version(response: dict[bytes, Union[bytes, str]]) -> VersionInformation:
+    def _parse_version(response: Dict[bytes, Union[bytes, str]]) -> VersionInformation:
         """
         Get versions from the response.
         :param response: API response containing the necessary data
@@ -62,7 +62,7 @@ class RPCCore(Base):
         )
 
     @staticmethod
-    def _parse_module_statistics(response: dict[bytes, int]) -> ModuleStatistics:
+    def _parse_module_statistics(response: Dict[bytes, int]) -> ModuleStatistics:
         """
         Get module statistics from the response.
         :param response: API response containing the necessary data
@@ -79,7 +79,7 @@ class RPCCore(Base):
         )
 
     @staticmethod
-    def _parse_framework_thread(response: dict[str, Union[bytes, str, bool]]) -> FrameworkThread:
+    def _parse_framework_thread(response: Dict[str, Union[bytes, str, bool]]) -> FrameworkThread:
         """
         Get framework thread from the response.
         :param response: API response containing the necessary data
@@ -209,7 +209,7 @@ class RPCCore(Base):
 
         return self._parse_module_statistics(response)
 
-    def thread_list(self) -> dict[int, FrameworkThread]:  # TODO: Move the id to the thread and make it a list?
+    def thread_list(self) -> Dict[int, FrameworkThread]:  # TODO: Move the id to the thread and make it a list?
         """
         List framework threads.
         :return: List of framework threads

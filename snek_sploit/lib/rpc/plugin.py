@@ -1,3 +1,5 @@
+from typing import List
+
 from snek_sploit.lib.base import Base
 from snek_sploit.util import constants
 
@@ -36,7 +38,7 @@ class RPCPlugin(Base):
 
         return response[constants.RESULT] == constants.SUCCESS
 
-    def list_loaded(self) -> list[str]:
+    def list_loaded(self) -> List[str]:
         """
         List loaded plugins.
         :return: List of loaded plugins

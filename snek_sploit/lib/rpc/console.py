@@ -1,4 +1,5 @@
 from dataclasses import dataclass, asdict
+from typing import List
 
 from snek_sploit.lib.base import Base
 from snek_sploit.util import constants
@@ -33,9 +34,9 @@ class ConsoleOptions:
     HistFile: str = None  # Path to a file where we can store command history
     Config: str = None  # Path to the config file
     ConfirmExit: bool = None  # Whether to confirm before exiting
-    XCommands: list[str] = None  # Additional startup commands
+    XCommands: List[str] = None  # Additional startup commands
     DisableBanner: bool = None  # Whether to disable the banner on startup
-    Plugins: list[str] = None  # Plugins to load
+    Plugins: List[str] = None  # Plugins to load
 
 
 class RPCConsole(Base):
@@ -104,7 +105,7 @@ class RPCConsole(Base):
 
         return response[constants.RESULT] == constants.SUCCESS
 
-    def list_consoles(self) -> list[ConsoleInfo]:
+    def list_consoles(self) -> List[ConsoleInfo]:
         """
         List framework consoles.
         :return: List of framework consoles
@@ -149,7 +150,7 @@ class RPCConsole(Base):
 
         return response[constants.WROTE]
 
-    def tabs(self, console_id: int, line: str) -> list[bytes]:
+    def tabs(self, console_id: int, line: str) -> List[bytes]:
         """
         Get tab-completed version of your input (such as a module path).
         :param console_id: ID of the console
