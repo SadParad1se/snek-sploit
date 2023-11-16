@@ -1,7 +1,44 @@
+from enum import StrEnum
 from typing import List, Dict, Union
+from dataclasses import dataclass
 
 from snek_sploit.lib.base import Base
 from snek_sploit.util import constants
+
+
+@dataclass
+class ModuleShortInfo:
+    type: str
+    name: str
+    fullname: str
+    rank: str
+    disclosure_date: str
+
+
+@dataclass
+class RunningStatistics:
+    waiting: List[str]
+    running: List[str]
+    results: List[str]
+
+
+# @dataclass
+# class DatastoreOption:  # TODO: some are probably missing, needs more research and testing
+#     type: str
+#     required: bool
+#     advanced: bool
+#     evasion: bool
+#     desc: str
+#     default: str
+#     enums: List[str]
+
+
+class ModuleType(StrEnum):
+    exploit = "exploit"
+    auxiliary = "auxiliary"
+    post = "post"
+    nop = "nop"
+    payload = "payload"
 
 
 # TODO unfinished, untested
@@ -36,6 +73,31 @@ class RPCModule(Base):
     ARCHITECTURES = "module.architectures"
     ENCODE_FORMATS = "module.encode_formats"
     ENCODE = "module.encode"
+
+    @staticmethod
+    def _parse_module_short_info(response: Dict[bytes, Union[str, bytes]]) -> ModuleShortInfo:
+        return ModuleShortInfo(
+            response[constants.TYPE],
+            response[constants.B_NAME],
+            response[constants.FULLNAME],
+            response[constants.RANK].decode(),
+            response[constants.DISCLOSURE_DATE].decode()
+        )
+
+    # TODO: once the DatastoreOption dataclass is implemented
+    # def _parse_datastore_option(self, response: Dict[bytes, Union[bytes, bool, int]]):
+    #     # Using auto-decode, since in some cases the enums parameter can contain multiple types (others probably too)
+    #     decoded = self.decode(response)
+    #
+    #     return DatastoreOption(
+    #         decoded[constants.TYPE].decode(),
+    #         response[constants.REQUIRED],
+    #         response[constants.ADVANCED],
+    #         response[constants.EVASION],
+    #         response[constants.DESC].decode(),
+    #         default,
+    #
+    #     )
 
     def list_exploit_modules(self) -> List[str]:
         """
@@ -146,105 +208,140 @@ class RPCModule(Base):
 
         return response[constants.MODULES]
 
-    def info_html(self, *args) -> object:
+    def info_html(self, module_type: ModuleType, module_name: str) -> str:
         """
-
-        :return:
+        Get detailed information about a module in HTML.
+        :param module_type: Type of the module
+        :param module_name: Name of the module
+        :return: HTML formatted response
         :full response example:
+            <html>
+            <head>
+            ...
+            </head>
+            <body onload="initDoc()">
+            ...
+            </body>
+            </html>
         """
-        response = self._context.call(self.INFO_HTML, list(args))
+        response = self._context.call(self.INFO_HTML, [module_type, module_name])
 
         return response
 
-    def info(self, *args) -> object:
+    def info(self, module_type: ModuleType, module_name: str) -> dict[str, Union[str, int, list, dict, bool]]:
+        # TODO: add ModuleInfo dataclass?
         """
-
-        :return:
+        Get the metadata for a module.
+        :param module_type: Type of the module
+        :param module_name: Name of the module
+        :return: Metadata of a module
         :full response example:
+            {b'type': b'auxiliary', b'authors': [b'thelightcosine'], b'BRUTEFORCE_SPEED': {b'type': b'integer',
+             b'required': True, b'advanced': False, b'desc': b'How fast to bruteforce, from 0 to 5', b'default': 5, ...}
+
         """
-        response = self._context.call(self.INFO, list(args))
+        response = self._context.call(self.INFO, [module_type, module_name])
+
+        return self.decode(response)
+
+    def search(self, substring: str) -> List[ModuleShortInfo]:
+        """
+        Search for a substring in modules (their name and fullname).
+        :param substring: Substring used to find a match
+        :return: Matched modules
+        :full response example:
+            [{b'type': 'auxiliary', b'name': 'WinRM Authentication Method Detection',
+              b'fullname': 'auxiliary/scanner/winrm/winrm_auth_methods', b'rank': b'normal', b'disclosuredate': b''}]
+        """
+        response = self._context.call(self.SEARCH, [substring])
+
+        return [self._parse_module_short_info(info) for info in response]
+
+    def compatible_exploit_payloads(self, exploit_module_name: str) -> List[str]:
+        """
+        Get compatible payloads for an exploit module.
+        :param exploit_module_name: Name of the exploit module
+        :return: Compatible payloads
+        :full response example: {b'payloads': ['generic/custom']}
+        """
+        response = self._context.call(self.COMPATIBLE_PAYLOADS, [exploit_module_name])
+
+        return response[constants.PAYLOADS]
+
+    def compatible_evasion_payloads(self, evasion_module_name: str) -> List[str]:
+        """
+        Get compatible payloads for an evasion module.
+        :param evasion_module_name: Name of the evasion module
+        :return: Compatible payloads
+        :full response example: {b'payloads': ['generic/custom']}
+        """
+        response = self._context.call(self.COMPATIBLE_EVASION_PAYLOADS, [evasion_module_name])
+
+        return response[constants.PAYLOADS]
+
+    def compatible_post_sessions(self, post_module_name: str) -> List[int]:
+        """
+        Get compatible sessions for a post module.
+        :param post_module_name: Name of the post module
+        :return: Compatible sessions
+        :full response example: {b'sessions': [1]}  # TODO: check the response to make sure it is correct
+        """
+        response = self._context.call(self.COMPATIBLE_SESSIONS, [post_module_name])
+
+        return response[constants.SESSIONS]
+
+    def target_compatible_exploit_payloads(self, exploit_module_name: str, target: int) -> object:
+        """
+        Get compatible target-specific payloads for an exploit.
+        :param exploit_module_name: Name of the exploit module
+        :param target: A specific target the exploit module provides.
+        :return: Compatible payloads
+        :full response example: {b'payloads': ['generic/custom']}
+        """
+        response = self._context.call(self.TARGET_COMPATIBLE_PAYLOADS, [exploit_module_name, target])
 
         return response
 
-    def search(self, *args) -> object:
+    def target_compatible_evasion_payloads(self, evasion_module_name: str, target: int) -> object:
         """
-
-        :return:
-        :full response example:
+        Get compatible payloads for an evasion module.
+        :param evasion_module_name: Name of the evasion module
+        :param target: A specific target the evasion module provides.
+        :return: Compatible payloads
+        :full response example: {b'payloads': ['generic/custom']}
         """
-        response = self._context.call(self.SEARCH, list(args))
+        response = self._context.call(self.TARGET_COMPATIBLE_EVASION_PAYLOADS, [evasion_module_name, target])
 
         return response
 
-    def compatible_payloads(self, *args) -> object:
+    def running_stats(self) -> RunningStatistics:  # TODO: test
         """
-
+        Get currently running module stats in each state.
         :return:
-        :full response example:
+        :full response example: {b'waiting': [], b'running': [], b'results': []}  # TODO: update once we have any stats
         """
-        response = self._context.call(self.COMPATIBLE_PAYLOADS, list(args))
+        response = self._context.call(self.RUNNING_STATS)
 
         return response
 
-    def compatible_evasion_payloads(self, *args) -> object:
+    def options(self, module_type: ModuleType, module_name: str) \
+            -> Dict[str, Dict[str, Union[dict, list, str, bool, int]]]:  # TODO: test
         """
-
-        :return:
+        Get module's datastore options.
+        :type module_type: Module type
+        :param module_name: Module name
+        :return: Module's datastore options (variables)
         :full response example:
+            {b'WORKSPACE': {b'type': b'string', b'required': False, b'advanced': True, b'evasion': False,
+                b'desc': b'Specify the workspace for this module'},
+             b'VERBOSE': {b'type': b'bool', b'required': False, b'advanced': True, b'evasion': False,
+                b'desc': b'Enable detailed status messages', b'default': False}}
         """
-        response = self._context.call(self.COMPATIBLE_EVASION_PAYLOADS, list(args))
+        response = self._context.call(self.OPTIONS, [module_type, module_name])
 
-        return response
-
-    def compatible_sessions(self, *args) -> object:
-        """
-
-        :return:
-        :full response example:
-        """
-        response = self._context.call(self.COMPATIBLE_SESSIONS, list(args))
-
-        return response
-
-    def target_compatible_payloads(self, *args) -> object:
-        """
-
-        :return:
-        :full response example:
-        """
-        response = self._context.call(self.TARGET_COMPATIBLE_PAYLOADS, list(args))
-
-        return response
-
-    def target_compatible_evasion_payloads(self, *args) -> object:
-        """
-
-        :return:
-        :full response example:
-        """
-        response = self._context.call(self.TARGET_COMPATIBLE_EVASION_PAYLOADS, list(args))
-
-        return response
-
-    def running_stats(self, *args) -> object:
-        """
-
-        :return:
-        :full response example:
-        """
-        response = self._context.call(self.RUNNING_STATS, list(args))
-
-        return response
-
-    def options(self, *args) -> object:
-        """
-
-        :return:
-        :full response example:
-        """
-        response = self._context.call(self.OPTIONS, list(args))
-
-        return response
+        # TODO: once we know all the possible variable options, use the DatastoreOption dataclass instead
+        # return {key: self._parse_datastore_option(value) for key, value in response.items()}
+        return self.decode(response)
 
     def execute(self, *args) -> object:
         """

@@ -48,5 +48,4 @@ docker compose up -d
 
 ## TODO
 async vs sync version?
-Consistent types from the responses
 Add custom exceptions

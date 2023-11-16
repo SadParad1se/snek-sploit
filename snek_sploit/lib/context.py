@@ -30,7 +30,7 @@ class Context:
         return arguments
 
     def call(self, endpoint: str, arguments: list = None, use_token: bool = True,
-             timeout: Union[float, tuple] = None) -> dict:
+             timeout: Union[float, tuple] = None) -> Union[dict, str]:
         if timeout is None:
             timeout = self.timeout
 
@@ -39,7 +39,7 @@ class Context:
         response = msgpack.loads(request.content, strict_map_key=False)
         print(response)  # TODO: remove, only for quick and dirty debugging
 
-        if response.get(constants.ERROR) is not None:
+        if isinstance(response, dict) and response.get(constants.ERROR) is not None:
             raise Exception(response)
 
         return response
