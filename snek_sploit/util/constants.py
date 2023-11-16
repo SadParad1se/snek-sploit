@@ -40,6 +40,11 @@ EVASION = b"evasion"  # bool
 DESC = b"desc"  # bytes
 DEFAULT = b"default"  # bytes
 ENUMS = b"enums"  # list
+JID = "jid"
+START_TIME = "start_time"
+DATASTORE = "datastore"
+JOB_ID = b"job_id"
+UUID = b"uuid"
 
 # Response values
 SUCCESS = b"success"  # -

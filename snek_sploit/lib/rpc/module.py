@@ -1,5 +1,5 @@
 from enum import StrEnum
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Any
 from dataclasses import dataclass
 
 from snek_sploit.lib.base import Base
@@ -21,6 +21,11 @@ class RunningStatistics:
     running: List[str]
     results: List[str]
 
+
+@dataclass
+class ExecutionInfo:
+    job_id: int
+    uuid: str
 
 # @dataclass
 # class DatastoreOption:  # TODO: some are probably missing, needs more research and testing
@@ -55,7 +60,7 @@ class RPCModule(Base):
     POST = "module.post"
     INFO_HTML = "module.info_html"
     INFO = "module.info"
-    SEARCH = "module.search"  # TODO: does this work?
+    SEARCH = "module.search"
     COMPATIBLE_PAYLOADS = "module.compatible_payloads"
     COMPATIBLE_EVASION_PAYLOADS = "module.compatible_evasion_payloads"
     COMPATIBLE_SESSIONS = "module.compatible_sessions"
@@ -317,18 +322,18 @@ class RPCModule(Base):
     def running_stats(self) -> RunningStatistics:  # TODO: test
         """
         Get currently running module stats in each state.
-        :return:
+        :return:  # TODO
         :full response example: {b'waiting': [], b'running': [], b'results': []}  # TODO: update once we have any stats
         """
         response = self._context.call(self.RUNNING_STATS)
 
         return response
 
-    def options(self, module_type: ModuleType, module_name: str) \
+    def list_module_options(self, module_type: ModuleType, module_name: str) \
             -> Dict[str, Dict[str, Union[dict, list, str, bool, int]]]:  # TODO: test
         """
         Get module's datastore options.
-        :type module_type: Module type
+        :param module_type: Module type
         :param module_name: Module name
         :return: Module's datastore options (variables)
         :full response example:
@@ -343,15 +348,18 @@ class RPCModule(Base):
         # return {key: self._parse_datastore_option(value) for key, value in response.items()}
         return self.decode(response)
 
-    def execute(self, *args) -> object:
+    def execute(self, module_type: ModuleType, module_name: str, options: Dict[str, Any]) -> ExecutionInfo:
         """
-
-        :return:
-        :full response example:
+        Execute a module.
+        :param module_type: Module type
+        :param module_name: Module name
+        :param options: Module options used for the execution (datastore/variables)
+        :return: Job ID and UUID
+        :full response example: {b'job_id': 0, b'uuid': b'nsHBAfM82VpCBiQsBM8Jdg48'}
         """
-        response = self._context.call(self.EXECUTE, list(args))
+        response = self._context.call(self.EXECUTE, [module_type, module_name, options])
 
-        return response
+        return ExecutionInfo(response[constants.JOB_ID], response[constants.UUID].decode())
 
     def check(self, *args) -> object:
         """
