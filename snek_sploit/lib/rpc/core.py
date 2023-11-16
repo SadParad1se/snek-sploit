@@ -8,6 +8,9 @@ from snek_sploit.util import constants
 
 @dataclass
 class ModuleStatistics:
+    """
+    Number of installed modules.
+    """
     exploits: int
     auxiliary: int
     post: int
@@ -19,6 +22,9 @@ class ModuleStatistics:
 
 @dataclass
 class VersionInformation:
+    """
+    Information about framework versions.
+    """
     version: str
     ruby: str
     api: str
@@ -26,6 +32,9 @@ class VersionInformation:
 
 @dataclass
 class FrameworkThread:
+    """
+    Information about framework thread.
+    """
     status: str
     critical: bool
     name: str

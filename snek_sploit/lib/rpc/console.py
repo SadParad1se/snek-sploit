@@ -7,6 +7,9 @@ from snek_sploit.util import constants
 
 @dataclass
 class ConsoleInfo:
+    """
+    Information about the console.
+    """
     id: int
     prompt: str
     busy: bool
@@ -14,6 +17,9 @@ class ConsoleInfo:
 
 @dataclass
 class ConsoleData:
+    """
+    Information about the console, including returned data.
+    """
     prompt: str
     busy: bool
     data: List[str]
