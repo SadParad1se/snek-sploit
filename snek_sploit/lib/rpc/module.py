@@ -1,3 +1,5 @@
+from typing import List, Dict, Union
+
 from snek_sploit.lib.base import Base
 from snek_sploit.util import constants
 
@@ -35,75 +37,114 @@ class RPCModule(Base):
     ENCODE_FORMATS = "module.encode_formats"
     ENCODE = "module.encode"
 
-    def exploits(self, *args) -> object:
+    def list_exploit_modules(self) -> List[str]:
         """
-
-        :return:
-        :full response example:
+        Get a list of exploit module names.
+        :return: List of exploit names.
+        :full response example: {b'modules': ['aix/local/ibstat_path']}
         """
-        response = self._context.call(self.EXPLOITS, list(args))
+        response = self._context.call(self.EXPLOITS)
 
-        return response
+        return response[constants.MODULES]
 
-    def evasion(self, *args) -> object:
+    def list_evasion_modules(self) -> List[str]:
         """
-
-        :return:
-        :full response example:
+        Get a list of evasion module names.
+        :return: List of evasion names.
+        :full response example: {b'modules': ['windows/applocker_evasion_install_util']}
         """
-        response = self._context.call(self.EVASION, list(args))
+        response = self._context.call(self.EVASION)
 
-        return response
+        return response[constants.MODULES]
 
-    def auxiliary(self, *args) -> object:
+    def list_auxiliary_modules(self) -> List[str]:
         """
-
-        :return:
-        :full response example:
+        Get a list of auxiliary module names.
+        :return: List of auxiliary names.
+        :full response example: {b'modules': ['admin/2wire/xslt_password_reset']}
         """
-        response = self._context.call(self.AUXILIARY, list(args))
+        response = self._context.call(self.AUXILIARY)
 
-        return response
+        return response[constants.MODULES]
 
-    def payloads(self, *args) -> object:
+    def list_payload_modules(self, fields: List[str] = None, architectures: List[str] = None) \
+            -> Union[List[str], Dict[str, Dict[str, str]]]:
+        # TODO: split into 2 methods?
+        # TODO: can the dict in dict (fields) have a different value?
         """
-
-        :return:
-        :full response example:
+        Get a list of payload module names.
+        In case you define a field/architecture, you get a dictionary with more information.
+        :param fields: Module information fields to display
+        :param architectures: Module supported architectures
+        :return: List of payload names. Optionally with some fields.
+        :full response example: {b'modules': ['aix/ppc/shell_bind_tcp']}
+        :fields and architecture response example: {b'modules': {'bsd/x86/exec': {'name': 'BSD Execute Command'}}}
         """
-        response = self._context.call(self.PAYLOADS, list(args))
+        if fields is not None:
+            fields = ",".join(fields)
 
-        return response
+        if architectures is not None:
+            architectures = ",".join(architectures)
 
-    def encoders(self, *args) -> object:
+        response = self._context.call(self.PAYLOADS, [fields, architectures])
+
+        return response[constants.MODULES]
+
+    def list_encoder_modules(self, fields: List[str] = None, architectures: List[str] = None) \
+            -> Union[List[str], Dict[str, Dict[str, str]]]:
+        # TODO: split into 2 methods?
+        # TODO: can the dict in dict (fields) have a different value?
         """
-
-        :return:
-        :full response example:
+        Get a list of encoder module names.
+        In case you define a field/architecture, you get a dictionary with more information.
+        :param fields: Module information fields to display
+        :param architectures: Module supported architectures
+        :return: List of encoder names. Optionally with some fields.
+        :full response example: {b'modules': ['cmd/brace']}
+        :fields and architecture response example: {b'modules': {'generic/eicar': {'name': 'The EICAR Encoder'}}}
         """
-        response = self._context.call(self.ENCODERS, list(args))
+        if fields is not None:
+            fields = ",".join(fields)
 
-        return response
+        if architectures is not None:
+            architectures = ",".join(architectures)
 
-    def nops(self, *args) -> object:
+        response = self._context.call(self.ENCODERS, [fields, architectures])
+
+        return response[constants.MODULES]
+
+    def list_nop_modules(self, fields: List[str] = None, architectures: List[str] = None) \
+            -> Union[List[str], Dict[str, Dict[str, str]]]:
+        # TODO: split into 2 methods?
+        # TODO: can the dict in dict (fields) have a different value?
         """
-
-        :return:
-        :full response example:
+        Get a list of NOP module names.
+        In case you define a field/architecture, you get a dictionary with more information.
+        :param fields: Module information fields to display
+        :param architectures: Module supported architectures
+        :return: List of NOP names. Optionally with some fields.
+        :full response example: {b'modules': ['aarch64/simple']}
+        :fields and architecture response example: {b'modules': {'x64/simple': {'name': 'Simple'}}}
         """
-        response = self._context.call(self.NOPS, list(args))
+        if fields is not None:
+            fields = ",".join(fields)
 
-        return response
+        if architectures is not None:
+            architectures = ",".join(architectures)
 
-    def post(self, *args) -> object:
+        response = self._context.call(self.NOPS, [fields, architectures])
+
+        return response[constants.MODULES]
+
+    def list_post_modules(self) -> List[str]:
         """
-
-        :return:
-        :full response example:
+        Get a list of post module names.
+        :return: List of post names.
+        :full response example: {b'modules': ['aix/hashdump']}
         """
-        response = self._context.call(self.POST, list(args))
+        response = self._context.call(self.POST)
 
-        return response
+        return response[constants.MODULES]
 
     def info_html(self, *args) -> object:
         """
