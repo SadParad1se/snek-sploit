@@ -331,7 +331,7 @@ class RPCModule(Base):
         Get compatible sessions for a post module.
         :param post_module_name: Name of the post module
         :return: Compatible sessions
-        :full response example: {b'sessions': [1]}  # TODO: check the response to make sure it is correct
+        :full response example: {b'sessions': [1]}
         """
         response = self._context.call(self.COMPATIBLE_SESSIONS, [post_module_name])
 

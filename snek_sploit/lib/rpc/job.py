@@ -27,7 +27,8 @@ class RPCJob(Base):
             response[constants.JID],
             response[constants.NAME].decode(),
             response[constants.START_TIME],
-            {key.decode(): value for key, value in response[constants.DATASTORE].items()}
+            {key.decode() if isinstance(key, bytes) else key: value
+             for key, value in response[constants.DATASTORE].items()}
         )
 
     def info(self, job_id: int) -> JobInformation:

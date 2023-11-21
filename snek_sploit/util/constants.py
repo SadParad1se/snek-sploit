@@ -48,6 +48,22 @@ B_UUID = b"uuid"  # bytes
 B_STATUS = b"status"  # bytes
 B_ERROR = b"error"  # str
 B_ENCODED = b"encoded"  # bytes
+TYPE = "type"
+TUNNEL_LOCAL = "tunnel_local"
+TUNNEL_PEER = "tunnel_peer"
+VIA_EXPLOIT = "via_exploit"
+VIA_PAYLOAD = "via_payload"
+DESC = "desc"
+INFO = "info"
+WORKSPACE = "workspace"
+SESSION_HOST = "session_host"
+SESSION_PORT = "session_port"
+TARGET_HOST = "target_host"
+USERNAME = "username"
+UUID = "uuid"
+EXPLOIT_UUID = "exploit_uuid"
+ROUTES = "routes"
+ARCH = "arch"
 
 # Response values
 B_SUCCESS = b"success"
