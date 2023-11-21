@@ -15,6 +15,7 @@ class SessionInformation:
         tunnel_local: Tunnel (where the malicious traffic comes from)
         tunnel_peer: Tunnel (local)
         via_exploit: Name of the exploit used by the session
+        via_payload: Name of the payload used by the session
         desc: Session description
         info: Session info (most likely the target's computer name)
         workspace: Name of the workspace
@@ -25,12 +26,14 @@ class SessionInformation:
         uuid: UUID
         exploit_uuid: Exploit's UUID
         routes: Routes
-        arch: Platform/Architecture
+        arch: Architecture
+        platform: Platform
     """
     type: str
     tunnel_local: str
     tunnel_peer: str
     via_exploit: str
+    via_payload: str
     desc: str
     info: str
     workspace: str
@@ -42,6 +45,7 @@ class SessionInformation:
     exploit_uuid: str
     routes: str
     arch: str
+    platform: str
 
 
 @dataclass
@@ -81,6 +85,19 @@ class MeterpreterSessionTransportOptions:
     cert: str
 
 
+@dataclass
+class ShellRead:
+    """
+    Information about shell when reading from it.
+
+    Parameters:
+        seq: Sequence
+        data: Read data
+    """
+    seq: int
+    data: str
+
+
 class RPCSession(Base):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Session.html
@@ -106,12 +123,19 @@ class RPCSession(Base):
     RING_CLEAR = "session.ring_clear"
 
     def _parse_session_information(self, response: Dict[str, Union[bytes, str, int]]) -> SessionInformation:
+        """
+        Get session's information from the response.
+        :param response: API response containing the necessary data
+        :return: Session's information
+        """
         parsed_response = self.decode(response)
+
         return SessionInformation(
             parsed_response[constants.TYPE],
             parsed_response[constants.TUNNEL_LOCAL],
             parsed_response[constants.TUNNEL_PEER],
             parsed_response[constants.VIA_EXPLOIT],
+            parsed_response[constants.VIA_PAYLOAD],
             parsed_response[constants.DESC],
             parsed_response[constants.INFO],
             parsed_response[constants.WORKSPACE],
@@ -122,7 +146,22 @@ class RPCSession(Base):
             parsed_response[constants.UUID],
             parsed_response[constants.EXPLOIT_UUID],
             parsed_response[constants.ROUTES],
-            parsed_response[constants.ARCH]
+            parsed_response[constants.ARCH],
+            parsed_response.get(constants.PLATFORM, "")
+        )
+
+    @staticmethod
+    def _parse_shell_read(response: Dict[bytes, Union[str, bytes, int]]) -> ShellRead:
+        """
+        Get read information from the response.
+        :param response: API response containing the necessary data
+        :return: Parsed read information
+        """
+        data = response[constants.B_DATA]
+
+        return ShellRead(
+            response[constants.B_SEQ],
+            data.decode() if isinstance(data, bytes) else data
         )
 
     def list_sessions(self) -> Dict[int, SessionInformation]:
@@ -151,17 +190,19 @@ class RPCSession(Base):
 
         return response[constants.B_RESULT] == constants.B_SUCCESS
 
-    def shell_read(self, session_id: int, pointer: int = None) -> object:  # TODO
+    def shell_read(self, session_id: int, pointer: int = None) -> ShellRead:  # TODO
         """
         Read the output of a shell session (such as a command output).
         :param session_id: ID of the session
         :param pointer: Read from/Offset?  # TODO
-        :return:
+        :return:  # TODO
         :full response example:
+            {b'seq': 0, b'data': ''}
+            {b'seq': 0, b'data': b'/bin/sh: 1: whoami\r: not found\n'}
         """
         response = self._context.call(self.SHELL_READ, [session_id, pointer])
 
-        return response
+        return self._parse_shell_read(response)
 
     def shell_write(self, session_id: int, data: str, add_new_line: bool = True) -> int:  # TODO
         """
@@ -170,17 +211,18 @@ class RPCSession(Base):
         :param session_id: ID of the session
         :param data: Data (command) to write
         :param add_new_line: Whether to add a new line at the end of the data
-        :return:
-        :full response example:
+        :return: Number of bytes written
+        :full response example: {b'write_count': '8'}
         """
-        if add_new_line:
+        if add_new_line:  # TODO: test which newline should be added - is it system dependent?
             data += "\r\n"
 
         response = self._context.call(self.SHELL_WRITE, [session_id, data])
 
-        return response
+        return int(response[constants.B_WRITE_COUNT])
 
-    def shell_upgrade(self, session_id: int, local_host: str, local_port: int) -> bool:  # TODO
+    def shell_upgrade(self, session_id: int, local_host: str, local_port: int) -> bool:
+        # TODO: does this destroy the old session? Add to the description what it really does.
         """
         Upgrade a shell to a meterpreter.
         This uses post/multi/manage/shell_to_meterpreter.
@@ -188,7 +230,7 @@ class RPCSession(Base):
         :param local_host: Local host
         :param local_port: Local port
         :return: True in case of success
-        :full response example:
+        :full response example: {b'result': b'success'}
         """
         response = self._context.call(self.SHELL_UPGRADE, [session_id, local_host, local_port])
 

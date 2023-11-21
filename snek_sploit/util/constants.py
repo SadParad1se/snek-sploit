@@ -64,6 +64,9 @@ UUID = "uuid"
 EXPLOIT_UUID = "exploit_uuid"
 ROUTES = "routes"
 ARCH = "arch"
+PLATFORM = "platform"
+B_WRITE_COUNT = b"write_count"
+B_SEQ = b"seq"
 
 # Response values
 B_SUCCESS = b"success"
