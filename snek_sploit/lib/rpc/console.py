@@ -66,9 +66,9 @@ class RPCConsole(Base):
         :return: Information about the console
         """
         return ConsoleInfo(
-            int(response[constants.ID]),
-            response[constants.PROMPT].decode(),
-            response[constants.BUSY]
+            int(response[constants.B_ID]),
+            response[constants.B_PROMPT].decode(),
+            response[constants.B_BUSY]
         )
 
     @staticmethod
@@ -79,9 +79,9 @@ class RPCConsole(Base):
         :return: Information about the console and its data
         """
         return ConsoleData(
-            response[constants.PROMPT].decode(),
-            response[constants.BUSY],
-            [data.decode() for data in response[constants.DATA]]
+            response[constants.B_PROMPT].decode(),
+            response[constants.B_BUSY],
+            [data.decode() for data in response[constants.B_DATA]]
         )
 
     def create(self, options: ConsoleOptions = None) -> ConsoleInfo:
@@ -106,10 +106,10 @@ class RPCConsole(Base):
         """
         response = self._context.call(self.DESTROY, [console_id])
 
-        if response[constants.RESULT] == constants.FAILURE:
+        if response[constants.B_RESULT] == constants.B_FAILURE:
             raise Exception("Invalid console ID")
 
-        return response[constants.RESULT] == constants.SUCCESS
+        return response[constants.B_RESULT] == constants.B_SUCCESS
 
     def list_consoles(self) -> List[ConsoleInfo]:
         """
@@ -120,7 +120,7 @@ class RPCConsole(Base):
         response = self._context.call(self.LIST)
 
         consoles = []
-        for console in response[constants.CONSOLES]:
+        for console in response[constants.B_CONSOLES]:
             consoles.append(self._parse_console_info(console))
 
         return consoles
@@ -134,7 +134,7 @@ class RPCConsole(Base):
         """
         response = self._context.call(self.READ, [console_id])
 
-        if response.get(constants.RESULT) == constants.FAILURE:
+        if response.get(constants.B_RESULT) == constants.B_FAILURE:
             raise Exception("Invalid console ID")
 
         return self._parse_console_data(response)
@@ -151,10 +151,10 @@ class RPCConsole(Base):
 
         response = self._context.call(self.WRITE, [console_id, data])
 
-        if response.get(constants.RESULT) == constants.FAILURE:
+        if response.get(constants.B_RESULT) == constants.B_FAILURE:
             raise Exception("Invalid console ID")
 
-        return response[constants.WROTE]
+        return response[constants.B_WROTE]
 
     def tabs(self, console_id: int, line: str) -> List[str]:
         """
@@ -166,10 +166,10 @@ class RPCConsole(Base):
         """
         response = self._context.call(self.TABS, [console_id, line])
 
-        if response.get(constants.RESULT) == constants.FAILURE:
+        if response.get(constants.B_RESULT) == constants.B_FAILURE:
             raise Exception("Invalid console ID")
 
-        return [tab.decode() for tab in response[constants.TABS]]
+        return [tab.decode() for tab in response[constants.B_TABS]]
 
     def session_kill(self, console_id: int) -> bool:
         """
@@ -181,10 +181,10 @@ class RPCConsole(Base):
         """
         response = self._context.call(self.SESSION_KILL, [console_id])
 
-        if response[constants.RESULT] == constants.FAILURE:
+        if response[constants.B_RESULT] == constants.B_FAILURE:
             raise Exception("Invalid console ID")
 
-        return response[constants.RESULT] == constants.SUCCESS
+        return response[constants.B_RESULT] == constants.B_SUCCESS
 
     def session_detach(self, console_id: int) -> bool:
         """
@@ -195,7 +195,7 @@ class RPCConsole(Base):
         """
         response = self._context.call(self.SESSION_DETACH, [console_id])
 
-        if response[constants.RESULT] == constants.FAILURE:
+        if response[constants.B_RESULT] == constants.B_FAILURE:
             raise Exception("Invalid console ID")
 
-        return response[constants.RESULT] == constants.SUCCESS
+        return response[constants.B_RESULT] == constants.B_SUCCESS

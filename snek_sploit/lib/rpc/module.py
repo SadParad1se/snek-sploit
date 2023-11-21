@@ -1,6 +1,6 @@
 from enum import StrEnum
 from typing import List, Dict, Union, Any
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 
 from snek_sploit.lib.base import Base
 from snek_sploit.util import constants
@@ -8,6 +8,9 @@ from snek_sploit.util import constants
 
 @dataclass
 class ModuleShortInfo:
+    """
+    Short module information.
+    """
     type: str
     name: str
     fullname: str
@@ -17,6 +20,9 @@ class ModuleShortInfo:
 
 @dataclass
 class RunningStatistics:
+    """
+    Jobs' statistics. Matched using job's UUID.
+    """
     waiting: List[str]
     running: List[str]
     results: List[str]
@@ -24,6 +30,9 @@ class RunningStatistics:
 
 @dataclass
 class ExecutionInfo:
+    """
+    Execution information.
+    """
     job_id: int
     uuid: str
 
@@ -38,7 +47,36 @@ class ExecutionInfo:
 #     enums: List[str]
 
 
+@dataclass
+class EncodingOptions:
+    """
+    Encoding options.
+    Parameters:
+        format: Encoding format
+        badchars: Bad characters
+        platform: Platform
+        arch: Architecture
+        ecount: Number of times to encode
+        inject: Enable injection
+        template: Template file (an executable)
+        template_path: Template path
+        addshellcode: Custom shellcode
+    """
+    format: str = None
+    badchars: str = None
+    platform: str = None
+    arch: str = None
+    ecount: int = None
+    inject: bool = None
+    template: str = None
+    template_path: str = None
+    addshellcode: str = None
+
+
 class ModuleType(StrEnum):
+    """
+    List of the existing module types.
+    """
     exploit = "exploit"
     auxiliary = "auxiliary"
     post = "post"
@@ -46,7 +84,6 @@ class ModuleType(StrEnum):
     payload = "payload"
 
 
-# TODO unfinished, untested
 class RPCModule(Base):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Module.html
@@ -81,12 +118,17 @@ class RPCModule(Base):
 
     @staticmethod
     def _parse_module_short_info(response: Dict[bytes, Union[str, bytes]]) -> ModuleShortInfo:
+        """
+        Get Module's short information from the response.
+        :param response: API response containing the necessary data
+        :return: Parsed module's short information
+        """
         return ModuleShortInfo(
-            response[constants.TYPE],
+            response[constants.B_TYPE],
             response[constants.B_NAME],
-            response[constants.FULLNAME],
-            response[constants.RANK].decode(),
-            response[constants.DISCLOSURE_DATE].decode()
+            response[constants.B_FULLNAME],
+            response[constants.B_RANK].decode(),
+            response[constants.B_DISCLOSURE_DATE].decode()
         )
 
     # TODO: once the DatastoreOption dataclass is implemented
@@ -112,7 +154,7 @@ class RPCModule(Base):
         """
         response = self._context.call(self.EXPLOITS)
 
-        return response[constants.MODULES]
+        return response[constants.B_MODULES]
 
     def list_evasion_modules(self) -> List[str]:
         """
@@ -122,7 +164,7 @@ class RPCModule(Base):
         """
         response = self._context.call(self.EVASION)
 
-        return response[constants.MODULES]
+        return response[constants.B_MODULES]
 
     def list_auxiliary_modules(self) -> List[str]:
         """
@@ -132,7 +174,7 @@ class RPCModule(Base):
         """
         response = self._context.call(self.AUXILIARY)
 
-        return response[constants.MODULES]
+        return response[constants.B_MODULES]
 
     def list_payload_modules(self, fields: List[str] = None, architectures: List[str] = None) \
             -> Union[List[str], Dict[str, Dict[str, str]]]:
@@ -155,7 +197,7 @@ class RPCModule(Base):
 
         response = self._context.call(self.PAYLOADS, [fields, architectures])
 
-        return response[constants.MODULES]
+        return response[constants.B_MODULES]
 
     def list_encoder_modules(self, fields: List[str] = None, architectures: List[str] = None) \
             -> Union[List[str], Dict[str, Dict[str, str]]]:
@@ -178,7 +220,7 @@ class RPCModule(Base):
 
         response = self._context.call(self.ENCODERS, [fields, architectures])
 
-        return response[constants.MODULES]
+        return response[constants.B_MODULES]
 
     def list_nop_modules(self, fields: List[str] = None, architectures: List[str] = None) \
             -> Union[List[str], Dict[str, Dict[str, str]]]:
@@ -201,7 +243,7 @@ class RPCModule(Base):
 
         response = self._context.call(self.NOPS, [fields, architectures])
 
-        return response[constants.MODULES]
+        return response[constants.B_MODULES]
 
     def list_post_modules(self) -> List[str]:
         """
@@ -211,7 +253,7 @@ class RPCModule(Base):
         """
         response = self._context.call(self.POST)
 
-        return response[constants.MODULES]
+        return response[constants.B_MODULES]
 
     def info_html(self, module_type: ModuleType, module_name: str) -> str:
         """
@@ -271,7 +313,7 @@ class RPCModule(Base):
         """
         response = self._context.call(self.COMPATIBLE_PAYLOADS, [exploit_module_name])
 
-        return response[constants.PAYLOADS]
+        return response[constants.B_PAYLOADS]
 
     def compatible_evasion_payloads(self, evasion_module_name: str) -> List[str]:
         """
@@ -282,7 +324,7 @@ class RPCModule(Base):
         """
         response = self._context.call(self.COMPATIBLE_EVASION_PAYLOADS, [evasion_module_name])
 
-        return response[constants.PAYLOADS]
+        return response[constants.B_PAYLOADS]
 
     def compatible_post_sessions(self, post_module_name: str) -> List[int]:
         """
@@ -293,9 +335,9 @@ class RPCModule(Base):
         """
         response = self._context.call(self.COMPATIBLE_SESSIONS, [post_module_name])
 
-        return response[constants.SESSIONS]
+        return response[constants.B_SESSIONS]
 
-    def target_compatible_exploit_payloads(self, exploit_module_name: str, target: int) -> object:
+    def target_compatible_exploit_payloads(self, exploit_module_name: str, target: int) -> List[str]:
         """
         Get compatible target-specific payloads for an exploit.
         :param exploit_module_name: Name of the exploit module
@@ -305,9 +347,9 @@ class RPCModule(Base):
         """
         response = self._context.call(self.TARGET_COMPATIBLE_PAYLOADS, [exploit_module_name, target])
 
-        return response
+        return response[constants.B_PAYLOADS]
 
-    def target_compatible_evasion_payloads(self, evasion_module_name: str, target: int) -> object:
+    def target_compatible_evasion_payloads(self, evasion_module_name: str, target: int) -> List[str]:
         """
         Get compatible payloads for an evasion module.
         :param evasion_module_name: Name of the evasion module
@@ -317,20 +359,24 @@ class RPCModule(Base):
         """
         response = self._context.call(self.TARGET_COMPATIBLE_EVASION_PAYLOADS, [evasion_module_name, target])
 
-        return response
+        return response[constants.B_PAYLOADS]
 
-    def running_stats(self) -> RunningStatistics:  # TODO: test
+    def running_stats(self) -> RunningStatistics:
         """
-        Get currently running module stats in each state.
-        :return:  # TODO
-        :full response example: {b'waiting': [], b'running': [], b'results': []}  # TODO: update once we have any stats
+        Get currently running module statistics in each state.
+        :return: UUIDs of waiting, running, and results (finished) jobs
+        :full response example: {b'waiting': [], b'running': [b'RNEN1jKepDfcWLpvuPlmhktc'], b'results': []}
         """
         response = self._context.call(self.RUNNING_STATS)
 
-        return response
+        return RunningStatistics(
+            [each.decode() for each in response[constants.B_WAITING]],
+            [each.decode() for each in response[constants.B_RUNNING]],
+            [each.decode() for each in response[constants.B_RESULTS]]
+        )
 
     def list_module_options(self, module_type: ModuleType, module_name: str) \
-            -> Dict[str, Dict[str, Union[dict, list, str, bool, int]]]:  # TODO: test
+            -> Dict[str, Dict[str, Union[dict, list, str, bool, int]]]:
         """
         Get module's datastore options.
         :param module_type: Module type
@@ -359,94 +405,110 @@ class RPCModule(Base):
         """
         response = self._context.call(self.EXECUTE, [module_type, module_name, options])
 
-        return ExecutionInfo(response[constants.JOB_ID], response[constants.UUID].decode())
+        return ExecutionInfo(response[constants.B_JOB_ID], response[constants.B_UUID].decode())
 
-    def check(self, *args) -> object:
+    def check(self, module_type: ModuleType, module_name: str, options: Dict[str, Any]) -> ExecutionInfo:
         """
+        Run the check method of a module.
+        :param module_type: Module type (only auxiliary and exploit are allowed)
+        :param module_name: Module name
+        :param options: Module options used for the execution (datastore/variables)
+        :return: Job ID and UUID
+        :full response example: {b'job_id': 0, b'uuid': b'nsHBAfM82VpCBiQsBM8Jdg48'}
+        """
+        response = self._context.call(self.CHECK, [module_type, module_name, options])
 
-        :return:
-        :full response example:
+        return ExecutionInfo(response[constants.B_JOB_ID], response[constants.B_UUID].decode())
+
+    def results(self, uuid: str) -> Dict[str, Any]:
         """
-        response = self._context.call(self.CHECK, list(args))
+        Get results for a job.
+        :param uuid: Job's UUID
+        :return: Current job's status and its results if it's completed
+        :full response example: {b'status': b'completed', b'result': {'192.168.0.0': None}}
+        :full response example running: {b'status': b'running'}
+        :full response example error: {b'status': b'errored', b'error': "undefined method `strip!' ... "}
+        """
+        response = self._context.call(self.RESULTS, [uuid])
+
+        if response[constants.B_STATUS] == constants.B_RUNNING:
+            return {constants.STATUS: constants.RUNNING}
+        elif response[constants.B_STATUS] == constants.B_ERRORED:
+            return {constants.STATUS: constants.ERRORED, constants.ERROR: response[constants.B_ERROR]}
+        else:
+            return {constants.STATUS: constants.COMPLETED, constants.RESULT: response[constants.B_RESULT]}
+
+    def executable_formats(self) -> List[str]:
+        """
+        Get a list of executable format names.
+        :return: Executable format names
+        :full response example: [b'asp']
+        """
+        response = self._context.call(self.EXECUTABLE_FORMATS)
+
+        return [each.decode() for each in response]
+
+    def transform_formats(self) -> List[str]:
+        """
+        Get a list of transform format names.
+        :return: Transform format names
+        :full response example: [b'base32']
+        """
+        response = self._context.call(self.TRANSFORM_FORMATS)
+
+        return [each.decode() for each in response]
+
+    def encryption_formats(self) -> List[str]:
+        """
+        Get a list of encryption format names.
+        :return: Encryption format names
+        :full response example: [b'xor']
+        """
+        response = self._context.call(self.ENCRYPTION_FORMATS)
+
+        return [each.decode() for each in response]
+
+    def platforms(self) -> List[str]:
+        """
+        Get a list of platform names.
+        :return: Platform names
+        :full response example: ['aix']
+        """
+        response = self._context.call(self.PLATFORMS)
 
         return response
 
-    def results(self, *args) -> object:
+    def architectures(self) -> List[str]:
         """
+        Get a list of architecture names.
+        :return: Architecture names
+        :full response example: [b'aarch64']
+        """
+        response = self._context.call(self.ARCHITECTURES)
 
-        :return:
+        return [each.decode() for each in response]
+
+    def encode_formats(self) -> List[str]:
+        """
+        Get a list of encoding format names.
+        :return: Encoding format names
+        :full response example: [b'base32']
+        """
+        response = self._context.call(self.ENCODE_FORMATS)
+
+        return [each.decode() for each in response]
+
+    def encode(self, to_encode: str, encoder: str, options: EncodingOptions) -> str:
+        """
+        Encode data with an encoder.
+        :param to_encode: Data to encode
+        :param encoder: Name of the encoder
+        :param options: Options used for the encoding
+        :return: Encoded data (with a parameter declaration, newlines, and other wierd stuff)
         :full response example:
+            {b'encoded': b'unsigned char buf[] = \n"\\xd9\\xcd\\xd9\\x74\\x24\\xf4\\xb8\\x0e\\xe8\\xda\\x15\\x5b
+             \\x33\\xc9"\n"\\xb1\\x01\\x31\\x43\\x18\\x03\\x43\\x18\\x83\\xeb\\xf2\\x0a\\x2f\\x54";\n'}
         """
-        response = self._context.call(self.RESULTS, list(args))
+        response = self._context.call(self.ENCODE, [to_encode, encoder, asdict(options)])
 
-        return response
-
-    def executable_formats(self, *args) -> object:
-        """
-
-        :return:
-        :full response example:
-        """
-        response = self._context.call(self.EXECUTABLE_FORMATS, list(args))
-
-        return response
-
-    def transform_formats(self, *args) -> object:
-        """
-
-        :return:
-        :full response example:
-        """
-        response = self._context.call(self.TRANSFORM_FORMATS, list(args))
-
-        return response
-
-    def encryption_formats(self, *args) -> object:
-        """
-
-        :return:
-        :full response example:
-        """
-        response = self._context.call(self.ENCRYPTION_FORMATS, list(args))
-
-        return response
-
-    def platforms(self, *args) -> object:
-        """
-
-        :return:
-        :full response example:
-        """
-        response = self._context.call(self.PLATFORMS, list(args))
-
-        return response
-
-    def architectures(self, *args) -> object:
-        """
-
-        :return:
-        :full response example:
-        """
-        response = self._context.call(self.ARCHITECTURES, list(args))
-
-        return response
-
-    def encode_formats(self, *args) -> object:
-        """
-
-        :return:
-        :full response example:
-        """
-        response = self._context.call(self.ENCODE_FORMATS, list(args))
-
-        return response
-
-    def encode(self, *args) -> object:
-        """
-
-        :return:
-        :full response example:
-        """
-        response = self._context.call(self.ENCODE, list(args))
-
-        return response
+        return response[constants.B_ENCODED].decode()

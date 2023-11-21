@@ -65,9 +65,9 @@ class RPCCore(Base):
         :return: Parsed version information
         """
         return VersionInformation(
-            response[constants.VERSION],
-            response[constants.RUBY].decode(),
-            response[constants.API].decode()
+            response[constants.B_VERSION],
+            response[constants.B_RUBY].decode(),
+            response[constants.B_API].decode()
         )
 
     @staticmethod
@@ -78,13 +78,13 @@ class RPCCore(Base):
         :return: Parsed module statistics
         """
         return ModuleStatistics(
-            response[constants.EXPLOITS],
-            response[constants.AUXILIARY],
-            response[constants.POST],
-            response[constants.ENCODERS],
-            response[constants.NOPS],
-            response[constants.PAYLOADS],
-            response[constants.EVASIONS],
+            response[constants.B_EXPLOITS],
+            response[constants.B_AUXILIARY],
+            response[constants.B_POST],
+            response[constants.B_ENCODERS],
+            response[constants.B_NOPS],
+            response[constants.B_PAYLOADS],
+            response[constants.B_EVASIONS],
         )
 
     @staticmethod
@@ -156,7 +156,7 @@ class RPCCore(Base):
 
         response = self._context.call(self.SETG, [variable, value])
 
-        return response[constants.RESULT] == constants.SUCCESS
+        return response[constants.B_RESULT] == constants.B_SUCCESS
 
     def global_unset(self, variable: str) -> bool:
         """
@@ -169,7 +169,7 @@ class RPCCore(Base):
 
         response = self._context.call(self.UNSETG, [variable])
 
-        return response[constants.RESULT] == constants.SUCCESS
+        return response[constants.B_RESULT] == constants.B_SUCCESS
 
     def save(self) -> bool:
         """
@@ -179,7 +179,7 @@ class RPCCore(Base):
         """
         response = self._context.call(self.SAVE)
 
-        return response[constants.RESULT] == constants.SUCCESS
+        return response[constants.B_RESULT] == constants.B_SUCCESS
 
     def module_stats(self) -> ModuleStatistics:
         """
@@ -239,4 +239,4 @@ class RPCCore(Base):
         """
         response = self._context.call(self.THREAD_KILL, [thread_id])
 
-        return response[constants.RESULT] == constants.SUCCESS
+        return response[constants.B_RESULT] == constants.B_SUCCESS

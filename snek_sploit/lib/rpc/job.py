@@ -66,4 +66,4 @@ class RPCJob(Base):
         """
         response = self._context.call(self.STOP, [job_id])
 
-        return response[constants.RESULT] == constants.SUCCESS
+        return response[constants.B_RESULT] == constants.B_SUCCESS

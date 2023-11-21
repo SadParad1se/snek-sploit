@@ -25,7 +25,7 @@ class RPCAuth(Base):
         """
         response = self._context.call(self.LOGIN, [username, password], use_token=False)
 
-        return response[constants.TOKEN].decode()
+        return response[constants.B_TOKEN].decode()
 
     def logout(self, token: str) -> bool:
         """
@@ -36,7 +36,7 @@ class RPCAuth(Base):
         """
         response = self._context.call(self.LOGOUT, [token])
 
-        return response[constants.RESULT] == constants.SUCCESS
+        return response[constants.B_RESULT] == constants.B_SUCCESS
 
     def token_add(self, token: str) -> bool:
         """
@@ -47,7 +47,7 @@ class RPCAuth(Base):
         """
         response = self._context.call(self.TOKEN_ADD, [token])
 
-        return response[constants.RESULT] == constants.SUCCESS
+        return response[constants.B_RESULT] == constants.B_SUCCESS
 
     def token_remove(self, token: str) -> bool:
         """
@@ -58,7 +58,7 @@ class RPCAuth(Base):
         """
         response = self._context.call(self.TOKEN_REMOVE, [token])
 
-        return response[constants.RESULT] == constants.SUCCESS
+        return response[constants.B_RESULT] == constants.B_SUCCESS
 
     def token_list(self) -> List[str]:
         """
@@ -68,7 +68,7 @@ class RPCAuth(Base):
         """
         response = self._context.call(self.TOKEN_LIST)
 
-        return [token.decode() for token in response[constants.TOKENS]]
+        return [token.decode() for token in response[constants.B_TOKENS]]
 
     def token_generate(self) -> str:
         """
@@ -78,4 +78,4 @@ class RPCAuth(Base):
         """
         response = self._context.call(self.TOKEN_GENERATE)
 
-        return response[constants.TOKEN].decode()
+        return response[constants.B_TOKEN].decode()

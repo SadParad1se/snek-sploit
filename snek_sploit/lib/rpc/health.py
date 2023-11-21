@@ -16,4 +16,4 @@ class RPCHealth(Base):
         """
         response = self._context.call(self.CHECK, use_token=False)
 
-        return response[constants.STATUS] == constants.UP
+        return response[constants.STATUS] == constants.B_UP

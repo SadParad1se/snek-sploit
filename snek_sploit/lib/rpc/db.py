@@ -236,7 +236,7 @@ class RPCDB(Base):
         """
         response = self._context.call(self.ADD_WORKSPACE, [name])
 
-        return response[constants.RESULT] == constants.SUCCESS
+        return response[constants.B_RESULT] == constants.B_SUCCESS
 
     def get_host(self, *args) -> object:
         """

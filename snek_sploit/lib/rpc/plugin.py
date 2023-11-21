@@ -25,7 +25,7 @@ class RPCPlugin(Base):
 
         response = self._context.call(self.LOAD, [name, options])
 
-        return response[constants.RESULT] == constants.SUCCESS
+        return response[constants.B_RESULT] == constants.B_SUCCESS
 
     def unload(self, name: str) -> bool:
         """
@@ -36,7 +36,7 @@ class RPCPlugin(Base):
         """
         response = self._context.call(self.UNLOAD, [name])
 
-        return response[constants.RESULT] == constants.SUCCESS
+        return response[constants.B_RESULT] == constants.B_SUCCESS
 
     def list_loaded(self) -> List[str]:
         """
