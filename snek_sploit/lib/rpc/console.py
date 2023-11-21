@@ -139,15 +139,17 @@ class RPCConsole(Base):
 
         return self._parse_console_data(response)
 
-    def write(self, console_id: int, data: str) -> int:
+    def write(self, console_id: int, data: str, add_new_line: bool = True) -> int:
         """
         Send an input (such as a command) to the framework console.
         :param console_id: ID of the console
         :param data: Input to be written
+        :param add_new_line: Whether to add a new line at the end of the data
         :return: Number of bytes sent
         :full response example: {b'wrote': 11}
         """
-        data += "\r\n"
+        if add_new_line:
+            data += "\r\n"
 
         response = self._context.call(self.WRITE, [console_id, data])
 

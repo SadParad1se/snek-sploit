@@ -498,10 +498,10 @@ class RPCModule(Base):
 
         return [each.decode() for each in response]
 
-    def encode(self, to_encode: str, encoder: str, options: EncodingOptions) -> str:
+    def encode(self, data: str, encoder: str, options: EncodingOptions) -> str:
         """
         Encode data with an encoder.
-        :param to_encode: Data to encode
+        :param data: Data to encode
         :param encoder: Name of the encoder
         :param options: Options used for the encoding
         :return: Encoded data (with a parameter declaration, newlines, and other wierd stuff)
@@ -509,6 +509,6 @@ class RPCModule(Base):
             {b'encoded': b'unsigned char buf[] = \n"\\xd9\\xcd\\xd9\\x74\\x24\\xf4\\xb8\\x0e\\xe8\\xda\\x15\\x5b
              \\x33\\xc9"\n"\\xb1\\x01\\x31\\x43\\x18\\x03\\x43\\x18\\x83\\xeb\\xf2\\x0a\\x2f\\x54";\n'}
         """
-        response = self._context.call(self.ENCODE, [to_encode, encoder, asdict(options)])
+        response = self._context.call(self.ENCODE, [data, encoder, asdict(options)])
 
         return response[constants.B_ENCODED].decode()
