@@ -6,6 +6,8 @@ from snek_sploit.util import constants
 
 
 ResponseDict = Dict[Union[int, str, bytes], Union[int, str, bytes, list, dict, bool]]
+ResponseList = List[Union[str, bytes, dict]]
+RPCResponse = Union[ResponseDict, str, ResponseList]
 
 
 class Context:
@@ -32,11 +34,7 @@ class Context:
         self._url = f"http{'s' if ssl else ''}://{host}:{port}{uri}"
         self._headers = {"Content-type": "binary/message-pack"}
         self.timeout = timeout
-        # MSF self-signed certificate
-        # TODO: https://github.com/rapid7/metasploit-framework/issues/15569#issuecomment-901158008
-        #  From the msfrpc -h ...
-        #  -c   (JSON-RPC) Path to certificate (default: /root/.msf4/msf-ws-cert.pem)
-        self._certificate = certificate if certificate != "" else False
+        self._certificate = certificate if certificate != "" else False  # MSF's self-signed certificate
 
         self.verbose = verbose
 
@@ -55,7 +53,7 @@ class Context:
         return arguments
 
     def call(self, endpoint: str, arguments: list = None, use_token: bool = True,
-             timeout: Union[float, tuple] = None) -> Union[ResponseDict, str, List[Union[str, bytes]]]:
+             timeout: Union[float, tuple] = None) -> RPCResponse:
         """
         Create a call to an endpoint.
         :param endpoint: Endpoint name

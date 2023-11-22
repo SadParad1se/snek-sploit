@@ -4,7 +4,7 @@ from snek_sploit.lib.rpc.core import RPCCore, ModuleStatistics, VersionInformati
 from snek_sploit.lib.rpc.db import RPCDB  # TODO: add missing
 from snek_sploit.lib.rpc.health import RPCHealth
 from snek_sploit.lib.rpc.job import RPCJob, JobInformation
-from snek_sploit.lib.rpc.module import (RPCModule, ModuleType, EncodingOptions, ModuleShortInfo, ExecutionInfo,
-                                        RunningStatistics)
+from snek_sploit.lib.rpc.module import (RPCModule, ModuleType, EncodingOptions, ModuleShortInfo, ModuleExecutionInfo,
+                                        ModuleRunningStatistics)
 from snek_sploit.lib.rpc.plugin import RPCPlugin
-from snek_sploit.lib.rpc.session import RPCSession  # TODO: add missing
+from snek_sploit.lib.rpc.session import RPCSession, SessionInformation, MeterpreterSessionTransportOptions

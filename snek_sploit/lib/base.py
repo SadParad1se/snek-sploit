@@ -8,7 +8,7 @@ class Base(ABC):
     def __init__(self, context: Context):
         self._context = context
 
-    def decode(self, to_decode: Union[dict, list, bytes, str, int]) -> Union[dict, list, str, int]:
+    def _decode(self, to_decode: Union[dict, list, bytes, str, int]) -> Union[dict, list, str, int]:
         """
         Decode everything into the correct type and decode bytes.
         :param to_decode: Input you want to decode
@@ -17,9 +17,9 @@ class Base(ABC):
         if isinstance(to_decode, dict):
             decoded = {}
             for key, value in to_decode.items():
-                decoded[self.decode(key)] = self.decode(value)
+                decoded[self._decode(key)] = self._decode(value)
         elif isinstance(to_decode, list):
-            decoded = [self.decode(each) for each in to_decode]
+            decoded = [self._decode(each) for each in to_decode]
         elif isinstance(to_decode, bytes):
             decoded = to_decode.decode()
         else:

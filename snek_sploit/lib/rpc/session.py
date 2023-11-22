@@ -115,7 +115,7 @@ class RPCSession(Base):
         :param response: API response containing the necessary data
         :return: Session's information
         """
-        parsed_response = self.decode(response)
+        parsed_response = self._decode(response)
 
         return SessionInformation(
             parsed_response[constants.TYPE],

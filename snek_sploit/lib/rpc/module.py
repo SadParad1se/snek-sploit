@@ -19,7 +19,7 @@ class ModuleShortInfo:
 
 
 @dataclass
-class RunningStatistics:
+class ModuleRunningStatistics:
     """
     Jobs' statistics. Matched using job's UUID.
     """
@@ -29,7 +29,7 @@ class RunningStatistics:
 
 
 @dataclass
-class ExecutionInfo:
+class ModuleExecutionInfo:
     """
     Execution information.
     """
@@ -289,7 +289,7 @@ class RPCModule(Base):
         """
         response = self._context.call(self.INFO, [module_type, module_name])
 
-        return self.decode(response)
+        return self._decode(response)
 
     def search(self, substring: str) -> List[ModuleShortInfo]:
         """
@@ -361,7 +361,7 @@ class RPCModule(Base):
 
         return response[constants.B_PAYLOADS]
 
-    def running_stats(self) -> RunningStatistics:
+    def running_stats(self) -> ModuleRunningStatistics:
         """
         Get currently running module statistics in each state.
         :return: UUIDs of waiting, running, and results (finished) jobs
@@ -369,7 +369,7 @@ class RPCModule(Base):
         """
         response = self._context.call(self.RUNNING_STATS)
 
-        return RunningStatistics(
+        return ModuleRunningStatistics(
             [each.decode() for each in response[constants.B_WAITING]],
             [each.decode() for each in response[constants.B_RUNNING]],
             [each.decode() for each in response[constants.B_RESULTS]]
@@ -392,9 +392,9 @@ class RPCModule(Base):
 
         # TODO: once we know all the possible variable options, use the DatastoreOption dataclass instead
         # return {key: self._parse_datastore_option(value) for key, value in response.items()}
-        return self.decode(response)
+        return self._decode(response)
 
-    def execute(self, module_type: ModuleType, module_name: str, options: Dict[str, Any]) -> ExecutionInfo:
+    def execute(self, module_type: ModuleType, module_name: str, options: Dict[str, Any]) -> ModuleExecutionInfo:
         """
         Execute a module.
         :param module_type: Module type
@@ -405,9 +405,9 @@ class RPCModule(Base):
         """
         response = self._context.call(self.EXECUTE, [module_type, module_name, options])
 
-        return ExecutionInfo(response[constants.B_JOB_ID], response[constants.B_UUID].decode())
+        return ModuleExecutionInfo(response[constants.B_JOB_ID], response[constants.B_UUID].decode())
 
-    def check(self, module_type: ModuleType, module_name: str, options: Dict[str, Any]) -> ExecutionInfo:
+    def check(self, module_type: ModuleType, module_name: str, options: Dict[str, Any]) -> ModuleExecutionInfo:
         """
         Run the check method of a module.
         :param module_type: Module type (only auxiliary and exploit are allowed)
@@ -418,7 +418,7 @@ class RPCModule(Base):
         """
         response = self._context.call(self.CHECK, [module_type, module_name, options])
 
-        return ExecutionInfo(response[constants.B_JOB_ID], response[constants.B_UUID].decode())
+        return ModuleExecutionInfo(response[constants.B_JOB_ID], response[constants.B_UUID].decode())
 
     def results(self, uuid: str) -> Dict[str, Any]:
         """
