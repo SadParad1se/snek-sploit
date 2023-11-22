@@ -190,13 +190,14 @@ class RPCSession(Base):
 
         return response[constants.B_RESULT] == constants.B_SUCCESS
 
-    def shell_read(self, session_id: int, pointer: int = None) -> ShellRead:  # TODO
+    def shell_read(self, session_id: int, pointer: int = None) -> ShellRead:
         """
         Read the output of a shell session (such as a command output).
         :param session_id: ID of the session
-        :param pointer: Read from/Offset?  # TODO
-        :return:  # TODO
+        :param pointer: Read from/Offset?  # TODO: no clue what this does
+        :return: Return sequence and data from the shell
         :full response example:
+            {b'seq': 0, b'data': b'sad\n'}
             {b'seq': 0, b'data': ''}
             {b'seq': 0, b'data': b'/bin/sh: 1: whoami\r: not found\n'}
         """
@@ -204,28 +205,30 @@ class RPCSession(Base):
 
         return self._parse_shell_read(response)
 
-    def shell_write(self, session_id: int, data: str, add_new_line: bool = True) -> int:  # TODO
+    def shell_write(self, session_id: int, data: str) -> int:
         """
         Write to a shell session (such as a command).
         Note that you will to manually add a newline at the enf of your input so the system will process it.
         :param session_id: ID of the session
         :param data: Data (command) to write
-        :param add_new_line: Whether to add a new line at the end of the data
         :return: Number of bytes written
         :full response example: {b'write_count': '8'}
         """
-        if add_new_line:  # TODO: test which newline should be added - is it system dependent?
-            data += "\r\n"
+        # Commands work without the add_new_line on linux (or the `\n` is ok)
+        # TODO: test if the newline must be added in case of other systems, if not, remove it from the docstring
+        # https://stackoverflow.com/a/3720674
+        # if add_new_line:
+        #     data += "\r\n"
 
         response = self._context.call(self.SHELL_WRITE, [session_id, data])
 
         return int(response[constants.B_WRITE_COUNT])
 
     def shell_upgrade(self, session_id: int, local_host: str, local_port: int) -> bool:
-        # TODO: does this destroy the old session? Add to the description what it really does.
         """
         Upgrade a shell to a meterpreter.
         This uses post/multi/manage/shell_to_meterpreter.
+        It also seems it makes the original session unusable.
         :param session_id: ID of the session
         :param local_host: Local host
         :param local_port: Local port
