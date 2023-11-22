@@ -27,7 +27,7 @@ class SessionInformation:
         exploit_uuid: Exploit's UUID
         routes: Routes
         arch: Architecture
-        platform: Platform
+        platform: Platform (Only if the session type is `meterpreter`)
     """
     type: str
     tunnel_local: str
@@ -85,19 +85,6 @@ class MeterpreterSessionTransportOptions:
     cert: str
 
 
-@dataclass
-class ShellRead:
-    """
-    Information about shell when reading from it.
-
-    Parameters:
-        seq: Sequence
-        data: Read data
-    """
-    seq: int
-    data: str
-
-
 class RPCSession(Base):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Session.html
@@ -150,20 +137,6 @@ class RPCSession(Base):
             parsed_response.get(constants.PLATFORM, "")
         )
 
-    @staticmethod
-    def _parse_shell_read(response: Dict[bytes, Union[str, bytes, int]]) -> ShellRead:
-        """
-        Get read information from the response.
-        :param response: API response containing the necessary data
-        :return: Parsed read information
-        """
-        data = response[constants.B_DATA]
-
-        return ShellRead(
-            response[constants.B_SEQ],
-            data.decode() if isinstance(data, bytes) else data
-        )
-
     def list_sessions(self) -> Dict[int, SessionInformation]:
         """
         Get a list of sessions that belong to the framework instance used by the RPC service.
@@ -190,20 +163,22 @@ class RPCSession(Base):
 
         return response[constants.B_RESULT] == constants.B_SUCCESS
 
-    def shell_read(self, session_id: int, pointer: int = None) -> ShellRead:
+    def shell_read(self, session_id: int, pointer: int = None) -> str:
         """
         Read the output of a shell session (such as a command output).
         :param session_id: ID of the session
-        :param pointer: Read from/Offset?  # TODO: no clue what this does
-        :return: Return sequence and data from the shell
+        :param pointer: Pointer (ignored in MSF, probably deprecated)
+        :return: Output from the shell (command)
         :full response example:
             {b'seq': 0, b'data': b'sad\n'}
             {b'seq': 0, b'data': ''}
             {b'seq': 0, b'data': b'/bin/sh: 1: whoami\r: not found\n'}
+            The `seq` parameter is always `0`.
         """
         response = self._context.call(self.SHELL_READ, [session_id, pointer])
+        data = response[constants.B_DATA]
 
-        return self._parse_shell_read(response)
+        return data.decode() if isinstance(data, bytes) else data
 
     def shell_write(self, session_id: int, data: str) -> int:
         """
@@ -239,105 +214,112 @@ class RPCSession(Base):
 
         return response[constants.B_RESULT] == constants.B_SUCCESS
 
-    def meterpreter_read(self, session_id: int) -> object:  # TODO
+    def meterpreter_read(self, session_id: int) -> str:
         """
         Get the output from a meterpreter session (such as a command output).
         :param session_id: ID of the session
-        :return:
+        :return: Output from the shell (command)
         :full response example:
+            {b'data': b''}
+            {b'data': b'\nCore Commands\n=============\n\n    Command       D\n                  e\n'
         """
         response = self._context.call(self.METERPRETER_READ, [session_id])
 
-        return response
+        return response[constants.B_DATA].decode()
 
-    def meterpreter_write(self, session_id: int, data: str) -> bool:  # TODO
+    def meterpreter_write(self, session_id: int, data: str) -> bool:
         """
         Write an input to a meterpreter prompt.
         :param session_id: ID of the session
         :param data: Data (command) to write
-        :return:
-        :full response example:
+        :return: True in case of success
+        :full response example: {b'result': b'success'}
         """
         response = self._context.call(self.METERPRETER_WRITE, [session_id, data])
 
         return response[constants.B_RESULT] == constants.B_SUCCESS
 
-    def meterpreter_session_detach(self, session_id: int) -> object:  # TODO
+    def meterpreter_session_detach(self, session_id: int) -> bool:
         """
         Detach from a meterpreter session. Serves the same purpose as CTRL+Z.
         :param session_id: ID of the session
-        :return:
-        :full response example:
+        :return: True in case of success
+        :full response example: {b'result': b'success'}
         """
         response = self._context.call(self.METERPRETER_SESSION_DETACH, [session_id])
 
         return response[constants.B_RESULT] == constants.B_SUCCESS
 
-    def meterpreter_session_kill(self, session_id: int) -> object:  # TODO
+    def meterpreter_session_kill(self, session_id: int) -> bool:
         """
         Kill a meterpreter session. Serves the same purpose as CTRL+C.
         :param session_id: ID of the session
-        :return:
-        :full response example:
+        :return: True in case of success
+        :full response example: {b'result': b'success'}
         """
         response = self._context.call(self.METERPRETER_SESSION_KILL, [session_id])
 
         return response[constants.B_RESULT] == constants.B_SUCCESS
 
-    def meterpreter_tabs(self, session_id: int, line: str) -> object:  # TODO
+    def meterpreter_tabs(self, session_id: int, line: str) -> List[str]:
         """
-
+        Get tab-completed version of your meterpreter prompt input.
         :param session_id: ID of the session
         :param line: Line you want to complete
-        :return:
-        :full response example:
+        :return: Possible completions
+        :full response example: {b'tabs': [b'bg', b'bgrun', b'bgkill', b'bglist']}
         """
         response = self._context.call(self.METERPRETER_TABS, [session_id, line])
 
-        return response
+        return [each.decode() for each in response[constants.B_TABS]]
 
-    def meterpreter_run_single(self, session_id: int, data: str) -> object:  # TODO
+    def meterpreter_run_single(self, session_id: int, data: str) -> bool:
         """
         Run a meterpreter command even if interacting with a shell or other channel.
         :param session_id: ID of the session
         :param data: Data (command) to write
-        :return:
-        :full response example:
+        :return: True in case of success
+        :full response example: {b'result': b'success'}
         """
         response = self._context.call(self.METERPRETER_RUN_SINGLE, [session_id, data])
 
         return response[constants.B_RESULT] == constants.B_SUCCESS
 
-    def meterpreter_script(self, session_id: int, script_name: str) -> object:  # TODO
+    def meterpreter_script(self, session_id: int, script_name: str) -> bool:
         """
-        !!!DEPRECATED!!!  # TODO: remove?
+        Run meterpreter script.
+        !!!DEPRECATED!!!
+        :param session_id: ID of the session
+        :param script_name: Meterpreter script name
+        :return: True in case of success
+        :full response example: {b'result': b'success'}
         """
         response = self._context.call(self.METERPRETER_SCRIPT, [session_id, script_name])
 
         return response[constants.B_RESULT] == constants.B_SUCCESS
 
-    def meterpreter_transport_change(self, session_id: int, options: MeterpreterSessionTransportOptions) -> object:  # TODO
+    def meterpreter_transport_change(self, session_id: int, options: MeterpreterSessionTransportOptions) -> bool:
         """
         Change the Transport of a given Meterpreter Session.
         :param session_id: ID of the session
         :param options: Options for the Meterpreter session transport
-        :return:
-        :full response example:
+        :return: True in case of success
+        :full response example: {b'result': b'success'}
         """
         response = self._context.call(self.METERPRETER_TRANSPORT_CHANGE, [session_id, asdict(options)])
 
         return response[constants.B_RESULT] == constants.B_SUCCESS
 
-    def meterpreter_directory_separator(self, session_id: int) -> object:  # TODO
+    def meterpreter_directory_separator(self, session_id: int) -> str:
         """
         Get the separator used by the meterpreter.
         :param session_id: ID of the session
-        :return:
-        :full response example:
+        :return: Separator
+        :full response example: {b'separator': b'/'}
         """
         response = self._context.call(self.METERPRETER_DIRECTORY_SEPARATOR, [session_id])
 
-        return response
+        return response[constants.B_SEPARATOR].decode()
 
     def compatible_modules(self, session_id: int) -> List[str]:
         """
@@ -350,46 +332,54 @@ class RPCSession(Base):
 
         return [each.decode() for each in response[constants.B_MODULES]]
 
-    def ring_read(self, session_id: int) -> object:  # TODO
+    def ring_read(self, session_id: int, pointer: int = None) -> str:
         """
-        Read the output of a shell session (such as a command output).
+        Read output from session (such as a command output).
         :param session_id: ID of the session
-        :return:
+        :param pointer: Pointer (ignored in MSF, probably deprecated)
+        :return: Output from the shell (command)
         :full response example:
+            {b'seq': 0, b'data': b'sad\n'}
+            {b'seq': 0, b'data': ''}
+            The `seq` parameter is always `0`.
         """
-        response = self._context.call(self.RING_READ, [session_id])
+        response = self._context.call(self.RING_READ, [session_id, pointer])
+        data = response[constants.B_DATA]
 
-        return response
+        return data.decode() if isinstance(data, bytes) else data
 
-    def ring_put(self, session_id: int, data: str) -> object:  # TODO
+    def ring_put(self, session_id: int, data: str) -> int:
         """
-        Write to a shell session (such as a command).
+        Write to a ring session (such as a command).
         :param session_id: ID of the session
         :param data: Data (command) to write
-        :return:
-        :full response example:
+        :return: Number of bytes written
+        :full response example: {b'write_count': '8'}
         """
         response = self._context.call(self.RING_PUT, [session_id, data])
 
-        return response
+        return int(response[constants.B_WRITE_COUNT])
 
-    def ring_last(self, session_id: int) -> object:  # TODO
+    def ring_last(self, session_id: int) -> int:
         """
         Get the last sequence (last issued ReadPointer) for a shell session.
         :param session_id: ID of the session
-        :return:
+        :return: Last sequence; will be always `0`
         :full response example:
+            {b'seq': 0}
+            The `seq` parameter is always `0`.
         """
         response = self._context.call(self.RING_LAST, [session_id])
 
-        return response
+        return response[constants.B_SEQ]
 
-    def ring_clear(self, session_id: int) -> object:  # TODO
+    def ring_clear(self, session_id: int) -> bool:
         """
         Clear a shell session. This may be useful to reclaim memory for idle background sessions.
+        It seems like it does nothing in the MSF.
         :param session_id: ID of the session
-        :return:
-        :full response example:
+        :return: True in case of success
+        :full response example: {b'result': b'success'}
         """
         response = self._context.call(self.RING_CLEAR, [session_id])
 

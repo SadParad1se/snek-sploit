@@ -1,13 +1,17 @@
 import requests
 import msgpack
-from typing import Union, List
+from typing import Union, List, Dict
 
 from snek_sploit.util import constants
 
 
+ResponseDict = Dict[Union[int, str, bytes], Union[int, str, bytes, list, dict, bool]]
+
+
 class Context:
     def __init__(self, username: str, password: str, host: str = "127.0.0.1", port: int = 55553, uri: str = "/api/",
-                 ssl: bool = True, certificate: str = "", token: str = "", timeout: Union[float, tuple] = None):
+                 ssl: bool = True, certificate: str = "", token: str = "", timeout: Union[float, tuple] = None,
+                 verbose: bool = False):
         """
         Context holds information used for authentication and communication with MSF RPC.
         :param username: Username used for authentication
@@ -19,6 +23,7 @@ class Context:
         :param certificate: Path to the certificate used for SSL(TLS)
         :param token: Token used for authentication
         :param timeout: Timeout for the RPC
+        :param verbose: Whether to print the raw RPC response
         """
         self.username = username
         self.password = password
@@ -32,6 +37,8 @@ class Context:
         #  From the msfrpc -h ...
         #  -c   (JSON-RPC) Path to certificate (default: /root/.msf4/msf-ws-cert.pem)
         self._certificate = certificate if certificate != "" else False
+
+        self.verbose = verbose
 
     def _create_arguments(self, call_arguments: list, use_token: bool) -> list:
         """
@@ -48,7 +55,7 @@ class Context:
         return arguments
 
     def call(self, endpoint: str, arguments: list = None, use_token: bool = True,
-             timeout: Union[float, tuple] = None) -> Union[dict, str, List[Union[str, bytes]]]:
+             timeout: Union[float, tuple] = None) -> Union[ResponseDict, str, List[Union[str, bytes]]]:
         """
         Create a call to an endpoint.
         :param endpoint: Endpoint name
@@ -68,7 +75,9 @@ class Context:
         data = msgpack.dumps([endpoint, *self._create_arguments(arguments, use_token)])
         request = requests.post(self._url, data, headers=self._headers, verify=self._certificate, timeout=timeout)
         response = msgpack.loads(request.content, strict_map_key=False)
-        print(response)  # TODO: remove, only for quick and dirty debugging
+
+        if self.verbose:
+            print(response)
 
         # TODO: add custom error classes and raise different errors
         if isinstance(response, dict) and response.get(constants.ERROR) is not None:
