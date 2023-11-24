@@ -29,14 +29,14 @@ class Client:
 
         self.context = Context(username, password, host, port, uri, ssl, certificate, token)
         self.auth = Auth(self.context)
-        self.console = Console(self.context)
+        self.console = Console(self.context)  # TODO: change to consoles?
         self.core = Core(self.context)
         self.db = DB(self.context)
         self.health = Health(self.context)
-        self.job = Job(self.context)
-        self.module = Module(self.context)
-        self.plugin = Plugin(self.context)
-        self.session = Session(self.context)
+        self.job = Job(self.context)  # TODO: change to jobs?
+        self.module = Module(self.context)  # TODO: change to modules?
+        self.plugin = Plugin(self.context)  # TODO: change to plugins?
+        self.session = Session(self.context)  # TODO: change to sessions?
 
         if log_in:
             self.login()

@@ -95,6 +95,9 @@ class Session(ContextBase):
         else:
             return RingSession(self.rpc, session_id)
 
+    def all(self) -> Dict[int, SessionInformation]:
+        return self.rpc.list_sessions()
+
     def filter(self, options: SessionInformation, strict: bool = False) -> Dict[int, SessionInformation]:
         all_sessions = self.rpc.list_sessions()
         matched_sessions = {}
