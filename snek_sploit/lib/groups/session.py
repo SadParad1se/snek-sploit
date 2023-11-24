@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from snek_sploit.lib.base import Base, Context
+from snek_sploit.lib.context import ContextBase, Context
 from snek_sploit.lib.rpc import RPCSession, SessionInformation
 
 
@@ -38,8 +38,10 @@ class MeterpreterSession(BaseSession):
 
 
 class RingSession(BaseSession):
+    pass
 
-class Session(Base):
+
+class Session(ContextBase):
     def __init__(self, context: Context):
         super().__init__(context)
         self.rpc = RPCSession(context)

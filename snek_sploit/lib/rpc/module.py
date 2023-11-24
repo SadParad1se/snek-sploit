@@ -2,7 +2,7 @@ from enum import StrEnum
 from typing import List, Dict, Union, Any
 from dataclasses import dataclass, asdict
 
-from snek_sploit.lib.base import Base
+from snek_sploit.lib.context import ContextBase
 from snek_sploit.util import constants
 
 
@@ -84,7 +84,7 @@ class ModuleType(StrEnum):
     payload = "payload"
 
 
-class RPCModule(Base):
+class RPCModule(ContextBase):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Module.html
     """

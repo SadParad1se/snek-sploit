@@ -1,7 +1,7 @@
 from typing import List, Dict, Union
 from dataclasses import dataclass, asdict
 
-from snek_sploit.lib.base import Base
+from snek_sploit.lib.context import ContextBase
 from snek_sploit.util import constants
 
 
@@ -85,7 +85,7 @@ class MeterpreterSessionTransportOptions:
     cert: str
 
 
-class RPCSession(Base):
+class RPCSession(ContextBase):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Session.html
     """

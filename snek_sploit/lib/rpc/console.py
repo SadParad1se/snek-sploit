@@ -1,7 +1,7 @@
 from dataclasses import dataclass, asdict
 from typing import List
 
-from snek_sploit.lib.base import Base
+from snek_sploit.lib.context import ContextBase
 from snek_sploit.util import constants
 
 
@@ -45,7 +45,7 @@ class ConsoleOptions:
     Plugins: List[str] = None  # Plugins to load
 
 
-class RPCConsole(Base):
+class RPCConsole(ContextBase):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Console.html
     """
