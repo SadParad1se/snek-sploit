@@ -47,6 +47,17 @@ class SessionInformation:
     arch: str
     platform: str
 
+    def match(self, other: "SessionInformation", strict: bool = False) -> bool:
+        if not isinstance(other, SessionInformation):
+            return False
+
+        this = asdict(self)
+        for key, value in asdict(other):
+            if value is not None and ((strict and value != this[key]) or (not strict and value not in this[key])):
+                return False
+
+        return True
+
 
 @dataclass
 class MeterpreterSessionTransportOptions:

@@ -1,9 +1,9 @@
-from enum import StrEnum
 from typing import List, Dict, Union, Any
 from dataclasses import dataclass, asdict
 
 from snek_sploit.lib.context import ContextBase
 from snek_sploit.util import constants
+from snek_sploit.util import ModuleType
 
 
 @dataclass
@@ -71,17 +71,6 @@ class EncodingOptions:
     template: str = None
     template_path: str = None
     addshellcode: str = None
-
-
-class ModuleType(StrEnum):
-    """
-    List of the existing module types.
-    """
-    exploit = "exploit"
-    auxiliary = "auxiliary"
-    post = "post"
-    nop = "nop"
-    payload = "payload"
 
 
 class RPCModule(ContextBase):
