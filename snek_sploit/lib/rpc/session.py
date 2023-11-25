@@ -29,23 +29,23 @@ class SessionInformation:
         arch: Architecture
         platform: Platform (Only if the session type is `meterpreter`)
     """
-    type: str
-    tunnel_local: str
-    tunnel_peer: str
-    via_exploit: str
-    via_payload: str
-    desc: str
-    info: str
-    workspace: str
-    session_host: str
-    session_port: int
-    target_host: str
-    username: str
-    uuid: str
-    exploit_uuid: str
-    routes: str
-    arch: str
-    platform: str
+    type: str = None
+    tunnel_local: str = None
+    tunnel_peer: str = None
+    via_exploit: str = None
+    via_payload: str = None
+    desc: str = None
+    info: str = None
+    workspace: str = None
+    session_host: str = None
+    session_port: int = None
+    target_host: str = None
+    username: str = None
+    uuid: str = None
+    exploit_uuid: str = None
+    routes: str = None
+    arch: str = None
+    platform: str = None
 
     def match(self, other: "SessionInformation", strict: bool = False) -> bool:
         if not isinstance(other, SessionInformation):

