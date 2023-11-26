@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Union, Dict
+import time
 
 from snek_sploit.lib.context import ContextBase, Context
 from snek_sploit.lib.rpc import RPCSession, SessionInformation, MeterpreterSessionTransportOptions
@@ -43,6 +44,46 @@ class ShellSession(BaseSession):
 
     def upgrade_to_meterpreter(self, local_host: str, local_port: int) -> bool:
         return self._rpc.shell_upgrade(self.id, local_host, local_port)
+
+    def gather_output(self, minimal_execution_time: float = 3, timeout: float = None, success_flags: List[str] = None,
+                      reading_delay: float = 1) -> str:
+        """
+        Gather output from the shell.
+        :param minimal_execution_time: The minimum amount of seconds to wait before exiting in case no output is read
+        :param timeout: The maximum time to wait for the output
+        :param success_flags: Flags to indicate the gathered output is enough (one flag == stop gathering)
+        :param reading_delay: Delay between the readings
+        :return: Gathered output
+        """
+        output = ""
+        timestamp = time.time()
+
+        if timeout:
+            timeout = timestamp + max(timeout, minimal_execution_time)
+
+        minimal_execution_time = timestamp + minimal_execution_time
+
+        while (data := self.read()) or (time.time() < minimal_execution_time):
+            output += data
+
+            # TODO: switch to regex?
+            # TODO: make sure at least the last 200 characters are tested, since the data can be split randomly?
+            if success_flags and any(flag in data for flag in success_flags):
+                break
+
+            if timeout and time.time() >= timeout:
+                break
+
+            time.sleep(reading_delay)
+
+        return output
+
+    def execute(self, command: str, minimal_execution_time: float = 3, timeout: float = None,
+                success_flags: List[str] = None, reading_delay: float = 1) -> str:
+        self.read()  # Clean the shell in case there are any unread data
+        self.write(command)
+
+        return self.gather_output(minimal_execution_time, timeout, success_flags, reading_delay)
 
 
 class MeterpreterSession(BaseSession):
