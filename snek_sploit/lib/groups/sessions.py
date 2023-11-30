@@ -107,6 +107,10 @@ class ShellSession(BaseSession):
 
 
 class MeterpreterSession(BaseSession):
+    # TODO: execute and execute_in_shell are partially finished, since they have to be tested with the x64 payload.
+    #   If it works seamlessly, then good. However, even if it works, try to play with the run_single and channel
+    #   combination a bit more. Also, make sure to remove the process ID, or save it into memory or return it. Right
+    #   now it poisons the command output.
     @property
     def directory_separator(self):
         return self._rpc.meterpreter_directory_separator(self.id)
