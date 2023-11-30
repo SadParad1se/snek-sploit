@@ -27,16 +27,23 @@ class Client:
         if disable_https_warnings:
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-        self.context = Context(username, password, host, port, uri, ssl, certificate, token, timeout, verbose)
-        self.auth = Auth(self.context)
-        self.consoles = Consoles(self.context)
-        self.core = Core(self.context)
-        self.db = DB(self.context)
-        self.health = Health(self.context)
-        self.jobs = Jobs(self.context)
-        self.modules = Modules(self.context)
-        self.plugins = Plugins(self.context)
-        self.sessions = Sessions(self.context)
+        self._context = Context(username, password, host, port, uri, ssl, certificate, token, timeout, verbose)
+
+        # TODO
+        # Metasploit
+        # Metasploit.Client.Auth
+        # Metasploit.Sessions.list()
+        self.rpc = RPC
+
+        self.auth = Auth()
+        self.consoles = Consoles()
+        self.core = Core()
+        self.db = DB()
+        self.health = Health()
+        self.jobs = Jobs()
+        self.modules = Modules()
+        self.plugins = Plugins()
+        self.sessions = Sessions()
 
         if log_in:
             self.login()
@@ -53,7 +60,7 @@ class Client:
         Wrapper for logout.
         :return: None
         """
-        self.auth.rpc.logout(self.context.token)
+        self.auth.rpc.logout(self._context.token)
 
     def call(self, endpoint: str, arguments: list = None, **kwargs) -> RPCResponse:
         """
@@ -63,4 +70,4 @@ class Client:
         :param kwargs: use_token, timeout
         :return: Raw RPC response
         """
-        return self.context.call(endpoint, arguments, **kwargs)
+        return self._context.call(endpoint, arguments, **kwargs)
