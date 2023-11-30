@@ -122,7 +122,7 @@ class RingSession(BaseSession):
         return self._rpc.ring_read(self.id)
 
 
-class Session(ContextBase):
+class Sessions(ContextBase):
     def __init__(self, context: Context):
         super().__init__(context)
         self.rpc = RPCSession(context)

@@ -2,7 +2,7 @@ import urllib3
 from typing import Union
 
 from snek_sploit.lib.context import Context, RPCResponse
-from snek_sploit.lib.groups import Auth, Console, Core, DB, Health, Job, Module, Plugin, Session
+from snek_sploit.lib.groups import Auth, Consoles, Core, DB, Health, Jobs, Modules, Plugins, Sessions
 
 
 class Client:
@@ -29,14 +29,14 @@ class Client:
 
         self.context = Context(username, password, host, port, uri, ssl, certificate, token)
         self.auth = Auth(self.context)
-        self.consoles = Console(self.context)
+        self.consoles = Consoles(self.context)
         self.core = Core(self.context)
         self.db = DB(self.context)
         self.health = Health(self.context)
-        self.jobs = Job(self.context)
-        self.modules = Module(self.context)
-        self.plugins = Plugin(self.context)
-        self.sessions = Session(self.context)
+        self.jobs = Jobs(self.context)
+        self.modules = Modules(self.context)
+        self.plugins = Plugins(self.context)
+        self.sessions = Sessions(self.context)
 
         if log_in:
             self.login()
