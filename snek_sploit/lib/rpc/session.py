@@ -48,12 +48,15 @@ class SessionInformation:
     platform: str = None
 
     def match(self, other: "SessionInformation", strict: bool = False) -> bool:
+        # TODO: allow dict
         if not isinstance(other, SessionInformation):
             return False
 
         this = asdict(self)
-        for key, value in asdict(other):
-            if value is not None and ((strict and value != this[key]) or (not strict and value not in this[key])):
+        for key, o_value in asdict(other).items():
+            t_value = this[key]
+            if o_value is not None and t_value is not None \
+                    and ((strict and o_value != t_value) or (not strict and o_value not in t_value)):
                 return False
 
         return True

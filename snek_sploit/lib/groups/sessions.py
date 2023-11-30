@@ -8,11 +8,11 @@ from snek_sploit.util import SessionType
 
 
 class BaseSession(ABC):
-    def __init__(self, rpc: RPCSession, session_id: int):
+    def __init__(self, rpc: RPCSession, session_id: int, info: SessionInformation = None):
         self._rpc = rpc
         self.id = session_id
         try:
-            self.info = self.fetch_information()
+            self.info = info if info is not None else self.fetch_information()
         except Exception:
             raise Exception(f"Unable to fetch information about the session with id {self.id}. Make sure it exists.")
 
@@ -33,22 +33,15 @@ class BaseSession(ABC):
     def read(self) -> str:
         pass
 
-
-class ShellSession(BaseSession):
-    def write(self, data: str) -> bool:
-        self._rpc.shell_write(self.id, data)
-        return True
-
-    def read(self) -> str:
-        return self._rpc.shell_read(self.id)
-
-    def upgrade_to_meterpreter(self, local_host: str, local_port: int) -> bool:
-        return self._rpc.shell_upgrade(self.id, local_host, local_port)
+    @abstractmethod
+    def execute(self, command: str, minimal_execution_time: float, timeout: float, success_flags: List[str],
+                reading_delay: float) -> str:
+        pass
 
     def gather_output(self, minimal_execution_time: float = 3, timeout: float = None, success_flags: List[str] = None,
                       reading_delay: float = 1) -> str:
         """
-        Gather output from the shell.
+        Gather output from the session.
         :param minimal_execution_time: The minimum amount of seconds to wait before exiting in case no output is read
         :param timeout: The maximum time to wait for the output
         :param success_flags: Flags to indicate the gathered output is enough (one flag == stop gathering)
@@ -78,9 +71,31 @@ class ShellSession(BaseSession):
 
         return output
 
+    def clear_buffer(self) -> None:
+        """
+        Clear unread data from the session.
+        :return: None
+        """
+        self.read()
+
+
+class ShellSession(BaseSession):
+    def write(self, data: str) -> bool:
+        self._rpc.shell_write(self.id, data)
+        return True
+
+    def read(self) -> str:
+        return self._rpc.shell_read(self.id)
+
+    def upgrade_to_meterpreter(self, local_host: str, local_port: int) -> bool:
+        # TODO: Custom update_to_meterpreter implementation? https://github.com/rapid7/metasploit-framework/issues/8800
+        #  The current one fails since its unable to use x64 instead of x86 architecture, we could add an optional
+        #  payload argument, which would mitigate this issue partially
+        return self._rpc.shell_upgrade(self.id, local_host, local_port)
+
     def execute(self, command: str, minimal_execution_time: float = 3, timeout: float = None,
                 success_flags: List[str] = None, reading_delay: float = 1) -> str:
-        self.read()  # Clean the shell in case there are any unread data
+        self.clear_buffer()
         self.write(command)
 
         return self.gather_output(minimal_execution_time, timeout, success_flags, reading_delay)
@@ -112,6 +127,22 @@ class MeterpreterSession(BaseSession):
     def change_transport(self, options: MeterpreterSessionTransportOptions) -> bool:
         return self._rpc.meterpreter_transport_change(self.id, options)
 
+    def execute(self, command: str, minimal_execution_time: float = 3, timeout: float = None,
+                success_flags: List[str] = None, reading_delay: float = 1) -> str:
+        self.clear_buffer()
+        self.write(command)
+
+        return self.gather_output(minimal_execution_time, timeout, success_flags, reading_delay)
+
+    def execute_in_shell(self, command: str, arguments: List[str], minimal_execution_time: float = 3,
+                         timeout: float = None, success_flags: List[str] = None, reading_delay: float = 1) -> str:
+        self.clear_buffer()
+
+        # TODO: test with custom x64 payload
+        self.run_single(f"execute -f {command} -c -i -a {' '.join(arguments)}")
+
+        return self.gather_output(minimal_execution_time, timeout, success_flags, reading_delay)
+
 
 class RingSession(BaseSession):
     def write(self, data: str) -> bool:
@@ -121,6 +152,13 @@ class RingSession(BaseSession):
     def read(self) -> str:
         return self._rpc.ring_read(self.id)
 
+    def execute(self, command: str, minimal_execution_time: float = 3, timeout: float = None,
+                success_flags: List[str] = None, reading_delay: float = 1) -> str:
+        self.clear_buffer()
+        self.write(command)
+
+        return self.gather_output(minimal_execution_time, timeout, success_flags, reading_delay)
+
 
 class Sessions(ContextBase):
     def __init__(self, context: Context):
@@ -128,13 +166,14 @@ class Sessions(ContextBase):
         self.rpc = RPCSession(context)
 
     def get(self, session_id: int) -> Union[ShellSession, MeterpreterSession, RingSession]:
-        session_type = self.rpc.list_sessions()[session_id].type
+        session_info = self.rpc.list_sessions()[session_id]
+        session_type = session_info.type
         if session_type == SessionType.shell:
-            return ShellSession(self.rpc, session_id)
+            return ShellSession(self.rpc, session_id, session_info)
         elif session_type == SessionType.meterpreter:
-            return MeterpreterSession(self.rpc, session_id)
+            return MeterpreterSession(self.rpc, session_id, session_info)
         else:
-            return RingSession(self.rpc, session_id)
+            return RingSession(self.rpc, session_id, session_info)
 
     def all(self) -> Dict[int, SessionInformation]:
         return self.rpc.list_sessions()

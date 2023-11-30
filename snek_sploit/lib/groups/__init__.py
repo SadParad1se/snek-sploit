@@ -6,4 +6,4 @@ from snek_sploit.lib.groups.health import Health
 from snek_sploit.lib.groups.jobs import Jobs
 from snek_sploit.lib.groups.modules import Modules
 from snek_sploit.lib.groups.plugins import Plugins
-from snek_sploit.lib.groups.sessions import Sessions
+from snek_sploit.lib.groups.sessions import Sessions, ShellSession, MeterpreterSession, RingSession
