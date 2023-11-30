@@ -87,11 +87,16 @@ class ShellSession(BaseSession):
     def read(self) -> str:
         return self._rpc.shell_read(self.id)
 
-    def upgrade_to_meterpreter(self, local_host: str, local_port: int) -> bool:
+    def upgrade_to_meterpreter(self, local_host: str, local_port: int, payload: str = None) -> bool:
         # TODO: Custom update_to_meterpreter implementation? https://github.com/rapid7/metasploit-framework/issues/8800
         #  The current one fails since its unable to use x64 instead of x86 architecture, we could add an optional
         #  payload argument, which would mitigate this issue partially
-        return self._rpc.shell_upgrade(self.id, local_host, local_port)
+        if payload is None:
+            return self._rpc.shell_upgrade(self.id, local_host, local_port)
+
+        # TODO: set PAYLOAD_OVERRIDE: linux/x64/meterpreter/reverse_tcp,
+        #  module: post/multi/manage/shell_to_meterpreter
+        return False
 
     def execute(self, command: str, minimal_execution_time: float = 3, timeout: float = None,
                 success_flags: List[str] = None, reading_delay: float = 1) -> str:
