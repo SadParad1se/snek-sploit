@@ -2,7 +2,7 @@ import urllib3
 from typing import Union
 
 from snek_sploit.lib.context import Context, RPCResponse
-from snek_sploit.lib.groups import Auth, Console, Core, DB, Health, Job, Module, Plugin, Session
+from snek_sploit.lib.groups import Auth, Consoles, Core, DB, Health, Jobs, Modules, Plugins, Sessions
 
 
 class Client:
@@ -27,16 +27,16 @@ class Client:
         if disable_https_warnings:
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-        self.context = Context(username, password, host, port, uri, ssl, certificate, token)
+        self.context = Context(username, password, host, port, uri, ssl, certificate, token, timeout, verbose)
         self.auth = Auth(self.context)
-        self.console = Console(self.context)
+        self.consoles = Consoles(self.context)
         self.core = Core(self.context)
         self.db = DB(self.context)
         self.health = Health(self.context)
-        self.job = Job(self.context)
-        self.module = Module(self.context)
-        self.plugin = Plugin(self.context)
-        self.session = Session(self.context)
+        self.jobs = Jobs(self.context)
+        self.modules = Modules(self.context)
+        self.plugins = Plugins(self.context)
+        self.sessions = Sessions(self.context)
 
         if log_in:
             self.login()

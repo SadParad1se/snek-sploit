@@ -1,9 +1,9 @@
-from enum import StrEnum
 from typing import List, Dict, Union, Any
 from dataclasses import dataclass, asdict
 
-from snek_sploit.lib.base import Base
+from snek_sploit.lib.context import ContextBase
 from snek_sploit.util import constants
+from snek_sploit.util import ModuleType
 
 
 @dataclass
@@ -73,18 +73,7 @@ class EncodingOptions:
     addshellcode: str = None
 
 
-class ModuleType(StrEnum):
-    """
-    List of the existing module types.
-    """
-    exploit = "exploit"
-    auxiliary = "auxiliary"
-    post = "post"
-    nop = "nop"
-    payload = "payload"
-
-
-class RPCModule(Base):
+class RPCModule(ContextBase):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Module.html
     """

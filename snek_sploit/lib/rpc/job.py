@@ -1,7 +1,7 @@
 from typing import Dict, Any
 from dataclasses import dataclass
 
-from snek_sploit.lib.base import Base
+from snek_sploit.lib.context import ContextBase
 from snek_sploit.util import constants
 
 
@@ -13,7 +13,7 @@ class JobInformation:
     datastore: Dict[str, Any]
 
 
-class RPCJob(Base):
+class RPCJob(ContextBase):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Job.html
     """

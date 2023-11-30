@@ -1,7 +1,7 @@
 from dataclasses import dataclass, asdict
 from typing import List, Dict, Union
 
-from snek_sploit.lib.base import Base
+from snek_sploit.lib.context import ContextBase
 from snek_sploit.util import constants
 
 
@@ -44,7 +44,7 @@ class AnalyzeHost:
 
 
 # TODO unfinished, untested
-class RPCDB(Base):
+class RPCDB(ContextBase):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Db.html
     """

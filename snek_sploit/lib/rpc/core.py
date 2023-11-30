@@ -2,7 +2,7 @@ from requests import ReadTimeout
 from dataclasses import dataclass
 from typing import Union, Dict
 
-from snek_sploit.lib.base import Base
+from snek_sploit.lib.context import ContextBase
 from snek_sploit.util import constants
 
 
@@ -41,7 +41,7 @@ class FrameworkThread:
     started: str
 
 
-class RPCCore(Base):
+class RPCCore(ContextBase):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Core.html
     """

@@ -1,8 +1,8 @@
-from snek_sploit.lib.base import Base, Context
+from snek_sploit.lib.context import ContextBase, Context
 from snek_sploit.lib.rpc import RPCAuth
 
 
-class Auth(Base):
+class Auth(ContextBase):
     def __init__(self, context: Context):
         super().__init__(context)
         self.rpc = RPCAuth(context)

@@ -1,10 +1,10 @@
 from typing import List
 
-from snek_sploit.lib.base import Base
+from snek_sploit.lib.context import ContextBase
 from snek_sploit.util import constants
 
 
-class RPCPlugin(Base):
+class RPCPlugin(ContextBase):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Plugin.html
     """

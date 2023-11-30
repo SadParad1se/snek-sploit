@@ -1,7 +1,7 @@
 from typing import List, Dict, Union
 from dataclasses import dataclass, asdict
 
-from snek_sploit.lib.base import Base
+from snek_sploit.lib.context import ContextBase
 from snek_sploit.util import constants
 
 
@@ -29,23 +29,37 @@ class SessionInformation:
         arch: Architecture
         platform: Platform (Only if the session type is `meterpreter`)
     """
-    type: str
-    tunnel_local: str
-    tunnel_peer: str
-    via_exploit: str
-    via_payload: str
-    desc: str
-    info: str
-    workspace: str
-    session_host: str
-    session_port: int
-    target_host: str
-    username: str
-    uuid: str
-    exploit_uuid: str
-    routes: str
-    arch: str
-    platform: str
+    type: str = None
+    tunnel_local: str = None
+    tunnel_peer: str = None
+    via_exploit: str = None
+    via_payload: str = None
+    desc: str = None
+    info: str = None
+    workspace: str = None
+    session_host: str = None
+    session_port: int = None
+    target_host: str = None
+    username: str = None
+    uuid: str = None
+    exploit_uuid: str = None
+    routes: str = None
+    arch: str = None
+    platform: str = None
+
+    def match(self, other: "SessionInformation", strict: bool = False) -> bool:
+        # TODO: allow dict
+        if not isinstance(other, SessionInformation):
+            return False
+
+        this = asdict(self)
+        for key, o_value in asdict(other).items():
+            t_value = this[key]
+            if o_value is not None and t_value is not None \
+                    and ((strict and o_value != t_value) or (not strict and o_value not in t_value)):
+                return False
+
+        return True
 
 
 @dataclass
@@ -85,7 +99,7 @@ class MeterpreterSessionTransportOptions:
     cert: str
 
 
-class RPCSession(Base):
+class RPCSession(ContextBase):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Session.html
     """
