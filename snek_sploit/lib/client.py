@@ -27,7 +27,7 @@ class Client:
         if disable_https_warnings:
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-        self.context = Context(username, password, host, port, uri, ssl, certificate, token)
+        self.context = Context(username, password, host, port, uri, ssl, certificate, token, timeout, verbose)
         self.auth = Auth(self.context)
         self.consoles = Consoles(self.context)
         self.core = Core(self.context)

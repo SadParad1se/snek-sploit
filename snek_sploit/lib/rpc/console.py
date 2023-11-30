@@ -22,7 +22,7 @@ class ConsoleData:
     """
     prompt: str
     busy: bool
-    data: List[str]
+    data: str
 
 
 @dataclass
@@ -81,7 +81,7 @@ class RPCConsole(ContextBase):
         return ConsoleData(
             response[constants.B_PROMPT].decode(),
             response[constants.B_BUSY],
-            [data.decode() for data in response[constants.B_DATA]]
+            response[constants.B_DATA].decode()
         )
 
     def create(self, options: ConsoleOptions = None) -> ConsoleInfo:
