@@ -3,12 +3,12 @@ from typing import List, Union, Dict
 import time
 
 from snek_sploit.lib.context import ContextBase, Context
-from snek_sploit.lib.rpc import RPCSession, SessionInformation, MeterpreterSessionTransportOptions
+from snek_sploit.lib.rpc import RPCSessions, SessionInformation, MeterpreterSessionTransportOptions
 from snek_sploit.util import SessionType
 
 
 class BaseSession(ABC):
-    def __init__(self, rpc: RPCSession, session_id: int, info: SessionInformation = None):
+    def __init__(self, rpc: RPCSessions, session_id: int, info: SessionInformation = None):
         self._rpc = rpc
         self.id = session_id
         try:
@@ -172,7 +172,7 @@ class RingSession(BaseSession):
 class Sessions(ContextBase):
     def __init__(self, context: Context):
         super().__init__(context)
-        self.rpc = RPCSession(context)
+        self.rpc = RPCSessions(context)
 
     def get(self, session_id: int) -> Union[ShellSession, MeterpreterSession, RingSession]:
         session_info = self.rpc.list_sessions()[session_id]

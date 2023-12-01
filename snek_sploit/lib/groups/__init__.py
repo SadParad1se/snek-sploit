@@ -1,3 +1,9 @@
+__all__ = [
+    "ShellSession",
+    "MeterpreterSession",
+    "RingSession"
+]
+
 from snek_sploit.lib.groups.auth import Auth
 from snek_sploit.lib.groups.consoles import Consoles
 from snek_sploit.lib.groups.core import Core

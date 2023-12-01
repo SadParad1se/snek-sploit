@@ -45,7 +45,7 @@ class ConsoleOptions:
     Plugins: List[str] = None  # Plugins to load
 
 
-class RPCConsole(ContextBase):
+class RPCConsoles(ContextBase):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Console.html
     """

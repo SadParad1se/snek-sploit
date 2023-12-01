@@ -4,7 +4,7 @@ from snek_sploit.lib.context import ContextBase
 from snek_sploit.util import constants
 
 
-class RPCPlugin(ContextBase):
+class RPCPlugins(ContextBase):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Plugin.html
     """

@@ -13,7 +13,7 @@ class JobInformation:
     datastore: Dict[str, Any]
 
 
-class RPCJob(ContextBase):
+class RPCJobs(ContextBase):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Job.html
     """

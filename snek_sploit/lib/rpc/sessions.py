@@ -62,6 +62,7 @@ class SessionInformation:
         return True
 
 
+# TODO: allow usage of a dict instead of a dataclass (everywhere)
 @dataclass
 class MeterpreterSessionTransportOptions:
     """
@@ -99,7 +100,7 @@ class MeterpreterSessionTransportOptions:
     cert: str
 
 
-class RPCSession(ContextBase):
+class RPCSessions(ContextBase):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Session.html
     """

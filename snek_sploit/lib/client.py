@@ -29,21 +29,15 @@ class Client:
 
         self._context = Context(username, password, host, port, uri, ssl, certificate, token, timeout, verbose)
 
-        # TODO
-        # Metasploit
-        # Metasploit.Client.Auth
-        # Metasploit.Sessions.list()
-        self.rpc = RPC
-
-        self.auth = Auth()
-        self.consoles = Consoles()
-        self.core = Core()
-        self.db = DB()
-        self.health = Health()
-        self.jobs = Jobs()
-        self.modules = Modules()
-        self.plugins = Plugins()
-        self.sessions = Sessions()
+        self.auth = Auth(self._context)
+        self.consoles = Consoles(self._context)
+        self.core = Core(self._context)
+        self.db = DB(self._context)
+        self.health = Health(self._context)
+        self.jobs = Jobs(self._context)
+        self.modules = Modules(self._context)
+        self.plugins = Plugins(self._context)
+        self.sessions = Sessions(self._context)
 
         if log_in:
             self.login()

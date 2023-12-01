@@ -73,7 +73,7 @@ class EncodingOptions:
     addshellcode: str = None
 
 
-class RPCModule(ContextBase):
+class RPCModules(ContextBase):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Module.html
     """
