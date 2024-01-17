@@ -2,14 +2,15 @@ from abc import ABC, abstractmethod
 from typing import List, Union, Dict
 import time
 
-from snek_sploit.lib.context import ContextBase, Context
-from snek_sploit.lib.rpc import RPCSessions, SessionInformation, MeterpreterSessionTransportOptions
+from snek_sploit.lib.groups.base import BaseGroup
+from snek_sploit.lib.client import Client
+from snek_sploit.lib.rpc import SessionInformation, MeterpreterSessionTransportOptions
 from snek_sploit.util import SessionType
 
 
 class BaseSession(ABC):
-    def __init__(self, rpc: RPCSessions, session_id: int, info: SessionInformation = None):
-        self._rpc = rpc
+    def __init__(self, client: Client, session_id: int, info: SessionInformation = None):
+        self._client = client
         self.id = session_id
         try:
             self.info = info if info is not None else self.fetch_information()
@@ -17,13 +18,13 @@ class BaseSession(ABC):
             raise Exception(f"Unable to fetch information about the session with id {self.id}. Make sure it exists.")
 
     def fetch_information(self) -> SessionInformation:
-        return self._rpc.list_sessions()[self.id]
+        return self._client.sessions.list_sessions()[self.id]
 
     def kill(self) -> bool:
-        return self._rpc.stop(self.id)
+        return self._client.sessions.stop(self.id)
 
     def compatible_post_modules(self):
-        return self._rpc.compatible_modules(self.id)
+        return self._client.sessions.compatible_modules(self.id)
 
     @abstractmethod
     def write(self, data: str) -> bool:
@@ -81,18 +82,18 @@ class BaseSession(ABC):
 
 class ShellSession(BaseSession):
     def write(self, data: str) -> bool:
-        self._rpc.shell_write(self.id, data)
+        self._client.sessions.shell_write(self.id, data)
         return True
 
     def read(self) -> str:
-        return self._rpc.shell_read(self.id)
+        return self._client.sessions.shell_read(self.id)
 
     def upgrade_to_meterpreter(self, local_host: str, local_port: int, payload: str = None) -> bool:
         # TODO: Custom update_to_meterpreter implementation? https://github.com/rapid7/metasploit-framework/issues/8800
         #  The current one fails since its unable to use x64 instead of x86 architecture, we could add an optional
         #  payload argument, which would mitigate this issue partially
         if payload is None:
-            return self._rpc.shell_upgrade(self.id, local_host, local_port)
+            return self._client.sessions.shell_upgrade(self.id, local_host, local_port)
 
         # TODO: set PAYLOAD_OVERRIDE: linux/x64/meterpreter/reverse_tcp,
         #  module: post/multi/manage/shell_to_meterpreter
@@ -113,28 +114,28 @@ class MeterpreterSession(BaseSession):
     #   now it poisons the command output.
     @property
     def directory_separator(self):
-        return self._rpc.meterpreter_directory_separator(self.id)
+        return self._client.sessions.meterpreter_directory_separator(self.id)
 
     def write(self, data: str) -> bool:
-        return self._rpc.meterpreter_write(self.id, data)
+        return self._client.sessions.meterpreter_write(self.id, data)
 
     def read(self) -> str:
-        return self._rpc.meterpreter_read(self.id)
+        return self._client.sessions.meterpreter_read(self.id)
 
     def tabs(self, line: str) -> List[str]:
-        return self._rpc.meterpreter_tabs(self.id, line)
+        return self._client.sessions.meterpreter_tabs(self.id, line)
 
     def run_single(self, data: str) -> bool:
-        return self._rpc.meterpreter_run_single(self.id, data)
+        return self._client.sessions.meterpreter_run_single(self.id, data)
 
     def run_script(self, script_name: str) -> bool:
-        return self._rpc.meterpreter_script(self.id, script_name)
+        return self._client.sessions.meterpreter_script(self.id, script_name)
 
     def detach(self) -> bool:
-        return self._rpc.meterpreter_session_detach(self.id)
+        return self._client.sessions.meterpreter_session_detach(self.id)
 
     def change_transport(self, options: MeterpreterSessionTransportOptions) -> bool:
-        return self._rpc.meterpreter_transport_change(self.id, options)
+        return self._client.sessions.meterpreter_transport_change(self.id, options)
 
     def execute(self, command: str, minimal_execution_time: float = 3, timeout: float = None,
                 success_flags: List[str] = None, reading_delay: float = 1) -> str:
@@ -155,11 +156,11 @@ class MeterpreterSession(BaseSession):
 
 class RingSession(BaseSession):
     def write(self, data: str) -> bool:
-        self._rpc.ring_put(self.id, data)
+        self._client.sessions.ring_put(self.id, data)
         return True
 
     def read(self) -> str:
-        return self._rpc.ring_read(self.id)
+        return self._client.sessions.ring_read(self.id)
 
     def execute(self, command: str, minimal_execution_time: float = 3, timeout: float = None,
                 success_flags: List[str] = None, reading_delay: float = 1) -> str:
@@ -169,26 +170,22 @@ class RingSession(BaseSession):
         return self.gather_output(minimal_execution_time, timeout, success_flags, reading_delay)
 
 
-class Sessions(ContextBase):
-    def __init__(self, context: Context):
-        super().__init__(context)
-        self.rpc = RPCSessions(context)
-
+class Sessions(BaseGroup):
     def get(self, session_id: int) -> Union[ShellSession, MeterpreterSession, RingSession]:
-        session_info = self.rpc.list_sessions()[session_id]
+        session_info = self._client.sessions.list_sessions()[session_id]
         session_type = session_info.type
         if session_type == SessionType.shell:
-            return ShellSession(self.rpc, session_id, session_info)
+            return ShellSession(self._client.sessions, session_id, session_info)
         elif session_type == SessionType.meterpreter:
-            return MeterpreterSession(self.rpc, session_id, session_info)
+            return MeterpreterSession(self._client.sessions, session_id, session_info)
         else:
-            return RingSession(self.rpc, session_id, session_info)
+            return RingSession(self._client.sessions, session_id, session_info)
 
     def all(self) -> Dict[int, SessionInformation]:
-        return self.rpc.list_sessions()
+        return self._client.sessions.list_sessions()
 
     def filter(self, options: SessionInformation, strict: bool = False) -> Dict[int, SessionInformation]:
-        all_sessions = self.rpc.list_sessions()
+        all_sessions = self._client.sessions.list_sessions()
         matched_sessions = {}
         for session_id, session_info in all_sessions.items():
             if session_info.match(options, strict):

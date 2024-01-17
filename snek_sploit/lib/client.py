@@ -2,7 +2,8 @@ import urllib3
 from typing import Union
 
 from snek_sploit.lib.context import Context, RPCResponse
-from snek_sploit.lib.groups import Auth, Consoles, Core, DB, Health, Jobs, Modules, Plugins, Sessions
+from snek_sploit.lib.rpc import (RPCAuth, RPCConsoles, RPCCore, RPCDB, RPCHealth, RPCJobs, RPCModules, RPCPlugins,
+                                 RPCSessions)
 
 
 class Client:
@@ -29,32 +30,34 @@ class Client:
 
         self._context = Context(username, password, host, port, uri, ssl, certificate, token, timeout, verbose)
 
-        self.auth = Auth(self._context)
-        self.consoles = Consoles(self._context)
-        self.core = Core(self._context)
-        self.db = DB(self._context)
-        self.health = Health(self._context)
-        self.jobs = Jobs(self._context)
-        self.modules = Modules(self._context)
-        self.plugins = Plugins(self._context)
-        self.sessions = Sessions(self._context)
+        self.auth = RPCAuth(self._context)
+        self.consoles = RPCConsoles(self._context)
+        self.core = RPCCore(self._context)
+        self.db = RPCDB(self._context)
+        self.health = RPCHealth(self._context)
+        self.jobs = RPCJobs(self._context)
+        self.modules = RPCModules(self._context)
+        self.plugins = RPCPlugins(self._context)
+        self.sessions = RPCSessions(self._context)
 
         if log_in:
             self.login()
 
     def login(self) -> None:
         """
-        Wrapper for login.
+        Login.
         :return: None
         """
-        self.auth.login()
+        token = self.auth.login(self._context.username, self._context.password)
+        self._context.token = token
+        self.auth.token_add(token)
 
     def logout(self) -> None:
         """
-        Wrapper for logout.
+        Logout.
         :return: None
         """
-        self.auth.rpc.logout(self._context.token)
+        self.auth.logout(self._context.token)
 
     def call(self, endpoint: str, arguments: list = None, **kwargs) -> RPCResponse:
         """

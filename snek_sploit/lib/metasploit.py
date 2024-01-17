@@ -1,6 +1,7 @@
 from typing import Union
 
 from snek_sploit.lib.client import Client
+from snek_sploit.lib.groups import Auth, Consoles, Core, DB, Health, Jobs, Modules, Plugins, Sessions
 
 
 class Metasploit:
@@ -26,3 +27,13 @@ class Metasploit:
             username, password, host, port, uri, ssl, certificate, log_in, token, disable_https_warnings, timeout,
             verbose
         )
+
+        self.auth = Auth(self.client)
+        self.consoles = Consoles(self.client)
+        self.core = Core(self.client)
+        self.db = DB(self.client)
+        self.health = Health(self.client)
+        self.jobs = Jobs(self.client)
+        self.modules = Modules(self.client)
+        self.plugins = Plugins(self.client)
+        self.sessions = Sessions(self.client)

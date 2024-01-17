@@ -1,8 +1,5 @@
-from snek_sploit.lib.context import ContextBase, Context
-from snek_sploit.lib.rpc import RPCDB
+from snek_sploit.lib.groups.base import BaseGroup
 
 
-class DB(ContextBase):
-    def __init__(self, context: Context):
-        super().__init__(context)
-        self.rpc = RPCDB(context)
+class DB(BaseGroup):
+    pass

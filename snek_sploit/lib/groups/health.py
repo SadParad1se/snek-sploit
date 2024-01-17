@@ -1,8 +1,5 @@
-from snek_sploit.lib.context import ContextBase, Context
-from snek_sploit.lib.rpc import RPCHealth
+from snek_sploit.lib.groups.base import BaseGroup
 
 
-class Health(ContextBase):
-    def __init__(self, context: Context):
-        super().__init__(context)
-        self.rpc = RPCHealth(context)
+class Health(BaseGroup):
+    pass

@@ -1,8 +1,6 @@
-from snek_sploit.lib.context import ContextBase, Context
-from snek_sploit.lib.rpc import RPCConsoles, ConsoleInfo
+from snek_sploit.lib.groups.base import BaseGroup
+from snek_sploit.lib.rpc import ConsoleInfo
 
 
-class Consoles(ContextBase):
-    def __init__(self, context: Context):
-        super().__init__(context)
-        self.rpc = RPCConsoles(context)
+class Consoles(BaseGroup):
+    pass

@@ -1,8 +1,5 @@
-from snek_sploit.lib.context import ContextBase, Context
-from snek_sploit.lib.rpc import RPCCore
+from snek_sploit.lib.groups.base import BaseGroup
 
 
-class Core(ContextBase):
-    def __init__(self, context: Context):
-        super().__init__(context)
-        self.rpc = RPCCore(context)
+class Core(BaseGroup):
+    pass
