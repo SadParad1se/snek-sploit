@@ -1,6 +1,6 @@
 import time
 
-from snek_sploit import Client, MeterpreterSession, ShellSession, SessionInformation
+from snek_sploit import Client, SessionMeterpreter, SessionShell, SessionInformation
 from snek_sploit.lib.rpc.modules import ModuleType
 import socket
 import subprocess

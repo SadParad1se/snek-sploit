@@ -1,7 +1,7 @@
 __all__ = [
-    "ShellSession",
-    "MeterpreterSession",
-    "RingSession"
+    "SessionShell",
+    "SessionMeterpreter",
+    "SessionRing"
 ]
 
 from snek_sploit.lib.groups.auth import Auth
@@ -12,4 +12,4 @@ from snek_sploit.lib.groups.health import Health
 from snek_sploit.lib.groups.jobs import Jobs
 from snek_sploit.lib.groups.modules import Modules
 from snek_sploit.lib.groups.plugins import Plugins
-from snek_sploit.lib.groups.sessions import Sessions, ShellSession, MeterpreterSession, RingSession
+from snek_sploit.lib.groups.sessions import Sessions, SessionShell, SessionMeterpreter, SessionRing

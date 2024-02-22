@@ -8,7 +8,7 @@ from snek_sploit.lib.rpc import SessionInformation, MeterpreterSessionTransportO
 from snek_sploit.util import SessionType
 
 
-class BaseSession(ABC):
+class Session(ABC):
     def __init__(self, client: Client, session_id: int, info: SessionInformation = None):
         self._client = client
         self.id = session_id
@@ -80,7 +80,7 @@ class BaseSession(ABC):
         self.read()
 
 
-class ShellSession(BaseSession):
+class SessionShell(Session):
     def write(self, data: str) -> bool:
         self._client.sessions.shell_write(self.id, data)
         return True
@@ -107,7 +107,7 @@ class ShellSession(BaseSession):
         return self.gather_output(minimal_execution_time, timeout, success_flags, reading_delay)
 
 
-class MeterpreterSession(BaseSession):
+class SessionMeterpreter(Session):
     # TODO: execute and execute_in_shell are partially finished, since they have to be tested with the x64 payload.
     #   If it works seamlessly, then good. However, even if it works, try to play with the run_single and channel
     #   combination a bit more. Also, make sure to remove the process ID, or save it into memory or return it. Right
@@ -154,7 +154,7 @@ class MeterpreterSession(BaseSession):
         return self.gather_output(minimal_execution_time, timeout, success_flags, reading_delay)
 
 
-class RingSession(BaseSession):
+class SessionRing(Session):
     def write(self, data: str) -> bool:
         self._client.sessions.ring_put(self.id, data)
         return True
@@ -171,15 +171,15 @@ class RingSession(BaseSession):
 
 
 class Sessions(BaseGroup):
-    def get(self, session_id: int) -> Union[ShellSession, MeterpreterSession, RingSession]:
+    def get(self, session_id: int) -> Union[SessionShell, SessionMeterpreter, SessionRing]:
         session_info = self._client.sessions.list_sessions()[session_id]
         session_type = session_info.type
         if session_type == SessionType.shell:
-            return ShellSession(self._client.sessions, session_id, session_info)
+            return SessionShell(self._client.sessions, session_id, session_info)
         elif session_type == SessionType.meterpreter:
-            return MeterpreterSession(self._client.sessions, session_id, session_info)
+            return SessionMeterpreter(self._client.sessions, session_id, session_info)
         else:
-            return RingSession(self._client.sessions, session_id, session_info)
+            return SessionRing(self._client.sessions, session_id, session_info)
 
     def all(self) -> Dict[int, SessionInformation]:
         return self._client.sessions.list_sessions()
