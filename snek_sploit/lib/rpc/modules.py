@@ -361,7 +361,7 @@ class RPCModules(ContextBase):
         return ModuleRunningStatistics(
             [each.decode() for each in response[constants.B_WAITING]],
             [each.decode() for each in response[constants.B_RUNNING]],
-            [each.decode() for each in response[constants.B_RESULTS]]
+            response[constants.B_RESULTS]
         )
 
     def list_module_options(self, module_type: ModuleType, module_name: str) \
