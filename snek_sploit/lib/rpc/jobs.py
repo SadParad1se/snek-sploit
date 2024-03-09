@@ -1,7 +1,7 @@
 from typing import Dict, Any
 from dataclasses import dataclass
 
-from snek_sploit.lib.context import ContextBase
+from snek_sploit.lib.context import ContextBase, Context
 from snek_sploit.util import constants
 
 
@@ -68,3 +68,9 @@ class RPCJobs(ContextBase):
         response = self._context.call(self.STOP, [job_id])
 
         return response[constants.B_RESULT] == constants.B_SUCCESS
+
+
+class Jobs(ContextBase):
+    def __init__(self, context: Context):
+        super().__init__(context)
+        self.rpc = RPCJobs(context)

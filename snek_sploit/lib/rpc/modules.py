@@ -1,7 +1,7 @@
 from typing import List, Dict, Union, Any
 from dataclasses import dataclass, asdict
 
-from snek_sploit.lib.context import ContextBase
+from snek_sploit.lib.context import ContextBase, Context
 from snek_sploit.util import constants
 from snek_sploit.util import ModuleType
 
@@ -501,3 +501,14 @@ class RPCModules(ContextBase):
         response = self._context.call(self.ENCODE, [data, encoder, asdict(options)])
 
         return response[constants.B_ENCODED].decode()
+
+
+class Modules(ContextBase):
+    def __init__(self, context: Context):
+        super().__init__(context)
+        self.rpc = RPCModules(context)
+
+    # def execute(self, ):
+    #     self.rpc.execute()
+    # # TODO: use console for everything
+    # #  https://github.com/rapid7/metasploit-framework/issues/18241#issuecomment-1662496538

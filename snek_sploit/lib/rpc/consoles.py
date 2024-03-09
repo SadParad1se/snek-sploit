@@ -1,7 +1,7 @@
 from dataclasses import dataclass, asdict
 from typing import List
 
-from snek_sploit.lib.context import ContextBase
+from snek_sploit.lib.context import ContextBase, Context
 from snek_sploit.util import constants
 
 
@@ -201,3 +201,31 @@ class RPCConsoles(ContextBase):
             raise Exception("Invalid console ID")
 
         return response[constants.B_RESULT] == constants.B_SUCCESS
+
+
+class Console:
+    def __init__(self, rpc: RPCConsoles, console_id: int):
+        self._rpc = rpc
+        self.id = console_id
+
+    def read(self):
+        self._rpc.read(self.id)
+
+    def write(self, data: str, add_new_line: bool = True):
+        self._rpc.write(self.id, data, add_new_line)
+
+    def destroy(self):
+        self._rpc.destroy(self.id)
+
+    def tabs(self, line: str):
+        self._rpc.tabs(self.id, line)
+
+
+class Consoles(ContextBase):
+    def __init__(self, context: Context):
+        super().__init__(context)
+        self.rpc = RPCConsoles(context)
+
+    def create(self):
+        console_info = self.rpc.create()
+        return Console(self.rpc, console_info.id)
