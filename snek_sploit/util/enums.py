@@ -1,7 +1,7 @@
 from enum import StrEnum
 
 
-class ModuleType(StrEnum):
+class ModuleType(StrEnum):  # TODO: str enum is supported since 3.11
     """
     List of the existing module types.
     """
@@ -12,7 +12,7 @@ class ModuleType(StrEnum):
     payload = "payload"
 
 
-class SessionType(StrEnum):
+class SessionType(StrEnum):  # TODO: str enum is supported since 3.11
     """
     List of the existing session types.
     """
