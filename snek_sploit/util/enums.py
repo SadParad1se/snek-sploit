@@ -1,21 +1,21 @@
-from enum import StrEnum
+from enum import Enum
 
 
-class ModuleType(StrEnum):  # TODO: str enum is supported since 3.11
+class ModuleType(str, Enum):  # StrEnum is supported since 3.11
     """
     List of the existing module types.
     """
-    exploit = "exploit"
-    auxiliary = "auxiliary"
-    post = "post"
-    nop = "nop"
-    payload = "payload"
+    EXPLOIT = "exploit"
+    AUXILIARY = "auxiliary"
+    POST = "post"
+    NOP = "nop"
+    PAYLOAD = "payload"
 
 
-class SessionType(StrEnum):  # TODO: str enum is supported since 3.11
+class SessionType(str, Enum):  # StrEnum is supported since 3.11
     """
     List of the existing session types.
     """
-    shell = "shell"
-    meterpreter = "meterpreter"
-    ring = "ring"
+    SHELL = "shell"
+    METERPRETER = "meterpreter"
+    RING = "ring"

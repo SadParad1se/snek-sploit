@@ -4,7 +4,8 @@ from dataclasses import dataclass, asdict
 import time
 
 from snek_sploit.lib.context import ContextBase, Context
-from snek_sploit.util import constants, SessionType
+from snek_sploit.util import constants
+from snek_sploit.util.enums import SessionType
 
 
 @dataclass
@@ -573,9 +574,9 @@ class Sessions(ContextBase):
     def get(self, session_id: int) -> Union[SessionShell, SessionMeterpreter, SessionRing]:
         session_info = self.rpc.list_sessions()[session_id]
         session_type = session_info.type
-        if session_type == SessionType.shell:
+        if session_type == SessionType.SHELL:
             return SessionShell(self.rpc, session_id, session_info)
-        elif session_type == SessionType.meterpreter:
+        elif session_type == SessionType.METERPRETER:
             return SessionMeterpreter(self.rpc, session_id, session_info)
         else:
             return SessionRing(self.rpc, session_id, session_info)

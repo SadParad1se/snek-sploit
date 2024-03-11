@@ -1,5 +1,5 @@
 from dataclasses import dataclass, asdict
-from typing import List, Dict, Union
+from typing import Dict
 
 from snek_sploit.lib.context import ContextBase, Context
 from snek_sploit.util import constants

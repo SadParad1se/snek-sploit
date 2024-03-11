@@ -4,10 +4,10 @@ Python typed RPC client for Metasploit Framework.
 ![](logo.png)
 
 ```python
-from snek_sploit import Client
+from snek_sploit import MetasploitClient
 
 if __name__ == '__main__':
-    client = Client("msf", "root")
+    client = MetasploitClient("msf", "root")
     print(client.core.rpc.version())
 
 ```

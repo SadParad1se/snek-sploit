@@ -3,7 +3,7 @@ from dataclasses import dataclass, asdict
 
 from snek_sploit.lib.context import ContextBase, Context
 from snek_sploit.util import constants
-from snek_sploit.util import ModuleType
+from snek_sploit.util.enums import ModuleType
 
 
 @dataclass

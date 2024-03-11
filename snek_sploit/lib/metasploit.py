@@ -1,14 +1,24 @@
+import urllib3
 from typing import Union
 
-from snek_sploit.lib.client import Client
+from snek_sploit.lib.context import Context, RPCResponse
+from snek_sploit.lib.rpc.auth import Auth
+from snek_sploit.lib.rpc.consoles import Consoles
+from snek_sploit.lib.rpc.core import Core
+from snek_sploit.lib.rpc.db import DB
+from snek_sploit.lib.rpc.health import Health
+from snek_sploit.lib.rpc.jobs import Jobs
+from snek_sploit.lib.rpc.modules import Modules
+from snek_sploit.lib.rpc.plugins import Plugins
+from snek_sploit.lib.rpc.sessions import Sessions
 
 
-class Metasploit:
+class MetasploitClient:
     def __init__(self, username: str, password: str, host: str = "127.0.0.1", port: int = 55553, uri: str = "/api/",
                  ssl: bool = True, certificate: str = "", log_in: bool = True, token: str = "",
                  disable_https_warnings: bool = False, timeout: Union[float, tuple] = None, verbose: bool = False):
         """
-        Wrapper for an MSF RPC client.
+        Client used for communication with MSF RPC.
         :param username: Username used for authentication
         :param password: Password used for authentication
         :param host: MSF RPC Host
@@ -22,8 +32,46 @@ class Metasploit:
         :param timeout: Timeout for the RPC
         :param verbose: Whether to print the raw RPC response
         """
-        self.client = Client(
-            username, password, host, port, uri, ssl, certificate, log_in, token, disable_https_warnings, timeout,
-            verbose
-        )
-        # TODO: all of the functionality will be here since metasploit support so little
+        if disable_https_warnings:
+            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+        self._context = Context(username, password, host, port, uri, ssl, certificate, token, timeout, verbose)
+
+        self.auth = Auth(self._context)
+        self.consoles = Consoles(self._context)
+        self.core = Core(self._context)
+        self.db = DB(self._context)
+        self.health = Health(self._context)
+        self.jobs = Jobs(self._context)
+        self.modules = Modules(self._context)
+        self.plugins = Plugins(self._context)
+        self.sessions = Sessions(self._context)
+
+        if log_in:
+            self.login()
+
+    def login(self) -> None:
+        """
+        Login.
+        :return: None
+        """
+        token = self.auth.login()
+        self._context.token = token
+        self.auth.rpc.token_add(token)
+
+    def logout(self) -> None:
+        """
+        Logout.
+        :return: None
+        """
+        self.auth.rpc.logout(self._context.token)
+
+    def call(self, endpoint: str, arguments: list = None, **kwargs) -> RPCResponse:
+        """
+        Wrapper for `self.context.call`.
+        :param endpoint: Endpoint name
+        :param arguments: Arguments that will be processed and passed to the endpoint
+        :param kwargs: use_token, timeout
+        :return: Raw RPC response
+        """
+        return self._context.call(endpoint, arguments, **kwargs)
