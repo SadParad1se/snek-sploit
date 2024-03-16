@@ -1,0 +1,27 @@
+<ruby>
+# Set LHOST
+run_single("setg LPORT #{ENV['LPORT']}") if ENV['LPORT']
+if ENV['LHOST']
+  lhost = ENV['LHOST']
+else
+  lhost = %x(hostname -i)
+end
+run_single("setg LHOST #{lhost}")
+
+# Update the DB config
+require 'erb'
+template = ERB.new File.read("/usr/src/metasploit-framework/config/database.yml"), nil, "%"
+File.open('/usr/src/metasploit-framework/config/database.yml', 'w') { |f| f.write(template.result(binding)) }
+
+# Connect to the DB
+run_single("db_connect -y /usr/src/metasploit-framework/config/database.yml")
+run_single("db_status")
+
+# Setup RPCD
+rpc_host = ENV['METASPLOIT_RPC_HOST']
+rpc_port = ENV['METASPLOIT_RPC_PORT']
+rpc_ssl = ENV['METASPLOIT_RPC_SSL']
+rpc_username = ENV['METASPLOIT_RPC_USERNAME']
+rpc_password = ENV['METASPLOIT_RPC_PASSWORD']
+run_single("load msgrpc ServerHost=#{rpc_host} ServerPort=#{rpc_port} User=#{rpc_username} Pass='#{rpc_password}' SSL=#{rpc_ssl}")
+</ruby>

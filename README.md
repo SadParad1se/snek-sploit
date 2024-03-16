@@ -19,12 +19,12 @@ pip install snek-sploit
 ```
 
 ## Starting MSF RPC server
-In console
+In Metasploit console
 ```shell
 load msgrpc ServerHost=127.0.0.1 ServerPort=55553 User=msf Pass='root' SSL=true
 ```
 
-In the background
+In shell
 ```shell
 msfrpcd -U msf -P root
 ```
@@ -42,7 +42,22 @@ In case you don't want to set up MSF RPC on your own, here is a convenient Compo
 docker compose up -d
 ```
 
-[Link to the MSF image documentation](https://cryton.gitlab-pages.ics.muni.cz/cryton-documentation/latest/docker-settings/#metasploit-framework).
+## Building msf-rpc Docker image
+Clone the MSF official repository, get latest version and build it:
+```shell
+git clone https://github.com/rapid7/metasploit-framework.git
+cd metasploit-framework/
+export MSF_VERSION=$(git tag --sort=-taggerdate | head -1)
+git checkout $MSF_VERSION
+docker build --tag metasploit-framework:latest --tag metasploit-framework:$MSF_VERSION .
+```
+
+Now go back to the root directory of snek-sploit and build the MSF RPC image:
+```shell
+cd ..
+docker build --tag metasploit-framework-rpc:latest --tag metasploit-framework-rpc:$MSF_VERSION .
+```
+
 
 ## TODO list
 - Typing and parameter support for the DB RPC class
