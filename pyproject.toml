@@ -19,7 +19,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.8"
 requests = "^2.31.0"
-msgpack = "^1.0.7"
+msgpack = "^1.0.8"
 
 
 [build-system]
