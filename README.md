@@ -44,10 +44,10 @@ cd snek-sploit
 docker compose up -d
 ```
 
-More information can be found in the [Metasploit Framework documentation](https://docs.rapid7.com/metasploit/rpc-api/).
+You can find more information in the [Metasploit Framework documentation](https://docs.rapid7.com/metasploit/rpc-api/).
 
 ### Using the MSF RPC certificate
-MSF RPC loads the SSL certificate by default from `/root/.msf4/msf-ws-cert.pem` (use the `-c` flag to choose a different location). If it's not, generate it as mentioned [here](https://github.com/rapid7/metasploit-framework/issues/15569#issuecomment-901158008).
+MSF RPC loads the SSL certificate by default from `/root/.msf4/msf-ws-cert.pem` (use the `-c` flag to choose a different location). If not, generate it as mentioned [here](https://github.com/rapid7/metasploit-framework/issues/15569#issuecomment-901158008).
 
 To use it in the client, save it locally and pass the path:
 ```python

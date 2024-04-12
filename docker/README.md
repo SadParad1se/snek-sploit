@@ -4,16 +4,16 @@ This is not the official Metasploit Framework Docker image. It can be found [her
 [Copyright notice](https://github.com/rapid7/metasploit-framework/blob/master/COPYING).
 
 ## Why this exists
-The Metasploit Framework image is updated usually once in three months and doesn't provide environment variables for DB or RPC setup.
+The Metasploit Framework image is updated usually once every three months and doesn't provide environment variables for DB or RPC setup.
 
 ## Quick reference
 
-- The `sadparad1se/metasploit-framework:latest` image is built from the [official MSF repository](https://github.com/rapid7/metasploit-framework) and only the labels are updated
+- The `sadparad1se/metasploit-framework:latest` image is built from the [official MSF repository](https://github.com/rapid7/metasploit-framework), and only the labels are updated
 - The `sadparad1se/metasploit-framework:rpc` image automatically tries to connect to the database and starts the RPC server
-- Code and the repository for this image can be found [here](https://github.com/SadParad1se/snek-sploit)
+- The repository for this image can be found [here](https://github.com/SadParad1se/snek-sploit)
 
 ## Usage
-Always run the images with the `--tty` option. Otherwise, the msfconsole will keep restarting.
+Always run the images with the `--tty` option. Otherwise, the MSF console will keep restarting.
 
 ### Run the Metasploit RPC server using Docker
 ```shell
@@ -64,7 +64,7 @@ volumes:
 ```
 
 ## Environment variables
-These variables are to be used with the `rpc*` tag only.
+These variables are only to be used with the `rpc*` tag.
 
 ### `METASPLOIT_RPC_HOST`
 Host to serve the RPC server at. 
@@ -92,27 +92,27 @@ Password used for RPC.
 Default: `root`
 
 ### `METASPLOIT_DB_HOST`
-Database host used for connection.
+Database host.
 
 Default: `127.0.0.1`
 
 ### `METASPLOIT_DB_PORT`
-Database port used for connection.
+Database port.
 
 Default: `5432`
 
 ### `METASPLOIT_DB_NAME`
-Database name used for connection.
+Name of the database to connect to.
 
 Default: `msf`
 
 ### `METASPLOIT_DB_USERNAME`
-Database username used for connection.
+Username for the database user.
 
 Default: `msf`
 
 ### `METASPLOIT_DB_PASSWORD`
-Database password used for connection.
+Password for the database user.
 
 Default: `msf`
 
@@ -121,11 +121,11 @@ Whether to use prepared statements.
 
 Default: `true`
 
-Set to `false` in combination with an external pooler like PgBouncer (before 1.21.0).
+Set to `false` if using an external pooler like PgBouncer (before 1.21.0).
 
 ### `METASPLOIT_DB_ADVISORY_LOCKS`
 Whether to use advisory locks.
 
 Default: `true`
 
-Set to `false` in combination with an external pooler like PgBouncer (before 1.21.0).
+Set to `false` if using an external pooler like PgBouncer (before 1.21.0).
