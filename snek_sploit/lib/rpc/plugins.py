@@ -1,10 +1,10 @@
 from typing import List
 
-from snek_sploit.lib.context import ContextBase
+from snek_sploit.lib.context import ContextBase, Context
 from snek_sploit.util import constants
 
 
-class RPCPlugin(ContextBase):
+class RPCPlugins(ContextBase):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Plugin.html
     """
@@ -47,3 +47,9 @@ class RPCPlugin(ContextBase):
         response = self._context.call(self.LOADED)
 
         return response[constants.PLUGINS]
+
+
+class Plugins(ContextBase):
+    def __init__(self, context: Context):
+        super().__init__(context)
+        self.rpc = RPCPlugins(context)

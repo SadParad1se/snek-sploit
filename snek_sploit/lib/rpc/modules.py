@@ -1,9 +1,9 @@
 from typing import List, Dict, Union, Any
 from dataclasses import dataclass, asdict
 
-from snek_sploit.lib.context import ContextBase
+from snek_sploit.lib.context import ContextBase, Context
 from snek_sploit.util import constants
-from snek_sploit.util import ModuleType
+from snek_sploit.util.enums import ModuleType
 
 
 @dataclass
@@ -73,7 +73,7 @@ class EncodingOptions:
     addshellcode: str = None
 
 
-class RPCModule(ContextBase):
+class RPCModules(ContextBase):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Module.html
     """
@@ -361,7 +361,7 @@ class RPCModule(ContextBase):
         return ModuleRunningStatistics(
             [each.decode() for each in response[constants.B_WAITING]],
             [each.decode() for each in response[constants.B_RUNNING]],
-            [each.decode() for each in response[constants.B_RESULTS]]
+            response[constants.B_RESULTS]
         )
 
     def list_module_options(self, module_type: ModuleType, module_name: str) \
@@ -501,3 +501,14 @@ class RPCModule(ContextBase):
         response = self._context.call(self.ENCODE, [data, encoder, asdict(options)])
 
         return response[constants.B_ENCODED].decode()
+
+
+class Modules(ContextBase):
+    def __init__(self, context: Context):
+        super().__init__(context)
+        self.rpc = RPCModules(context)
+
+    # def execute(self, ):
+    #     self.rpc.execute()
+    # # TODO: use console for everything
+    # #  https://github.com/rapid7/metasploit-framework/issues/18241#issuecomment-1662496538

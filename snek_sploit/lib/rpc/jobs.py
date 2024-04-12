@@ -1,7 +1,7 @@
 from typing import Dict, Any
 from dataclasses import dataclass
 
-from snek_sploit.lib.context import ContextBase
+from snek_sploit.lib.context import ContextBase, Context
 from snek_sploit.util import constants
 
 
@@ -13,7 +13,7 @@ class JobInformation:
     datastore: Dict[str, Any]
 
 
-class RPCJob(ContextBase):
+class RPCJobs(ContextBase):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Job.html
     """
@@ -68,3 +68,9 @@ class RPCJob(ContextBase):
         response = self._context.call(self.STOP, [job_id])
 
         return response[constants.B_RESULT] == constants.B_SUCCESS
+
+
+class Jobs(ContextBase):
+    def __init__(self, context: Context):
+        super().__init__(context)
+        self.rpc = RPCJobs(context)

@@ -5,7 +5,7 @@ import subprocess
 import socket
 import threading
 
-from snek_sploit import Client, ModuleType, SessionInformation
+from snek_sploit import MetasploitClient, ModuleType, SessionInformation
 
 
 def create_connection(target, port=4444):
@@ -21,11 +21,11 @@ def create_connection(target, port=4444):
 
 
 if __name__ == '__main__':
-    client = Client("msf", "root", disable_https_warnings=True)
+    client = MetasploitClient("msf", "root", disable_https_warnings=True)
 
     print("Starting MSF listener... ", end="")
     execution = client.modules.rpc.execute(
-        ModuleType.exploit,
+        ModuleType.EXPLOIT,
         "multi/handler",
         {"PAYLOAD": "python/shell_reverse_tcp", "LHOST": "0.0.0.0", "LPORT": 4444}
     )

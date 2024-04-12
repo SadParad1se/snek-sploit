@@ -1,7 +1,7 @@
 from dataclasses import dataclass, asdict
-from typing import List, Dict, Union
+from typing import Dict
 
-from snek_sploit.lib.context import ContextBase
+from snek_sploit.lib.context import ContextBase, Context
 from snek_sploit.util import constants
 
 
@@ -517,3 +517,9 @@ class RPCDB(ContextBase):
         response = self._context.call(self.STATUS, list(args))
 
         return response
+
+
+class DB(ContextBase):
+    def __init__(self, context: Context):
+        super().__init__(context)
+        self.rpc = RPCDB(context)

@@ -1,6 +1,6 @@
 from typing import List
 
-from snek_sploit.lib.context import ContextBase
+from snek_sploit.lib.context import ContextBase, Context
 from snek_sploit.util import constants
 
 
@@ -79,3 +79,14 @@ class RPCAuth(ContextBase):
         response = self._context.call(self.TOKEN_GENERATE)
 
         return response[constants.B_TOKEN].decode()
+
+
+class Auth(ContextBase):
+    def __init__(self, context: Context):
+        super().__init__(context)
+        self.rpc = RPCAuth(context)
+
+    def login(self):
+        token = self.rpc.login(self._context.username, self._context.password)
+        self._context.token = token
+        self.rpc.token_add(token)

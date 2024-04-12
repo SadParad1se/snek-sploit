@@ -1,7 +1,8 @@
 from dataclasses import dataclass, asdict
 from typing import List
+import time
 
-from snek_sploit.lib.context import ContextBase
+from snek_sploit.lib.context import ContextBase, Context
 from snek_sploit.util import constants
 
 
@@ -45,7 +46,7 @@ class ConsoleOptions:
     Plugins: List[str] = None  # Plugins to load
 
 
-class RPCConsole(ContextBase):
+class RPCConsoles(ContextBase):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Console.html
     """
@@ -201,3 +202,68 @@ class RPCConsole(ContextBase):
             raise Exception("Invalid console ID")
 
         return response[constants.B_RESULT] == constants.B_SUCCESS
+
+
+class Console:
+    def __init__(self, rpc: RPCConsoles, console_id: int):
+        self._rpc = rpc
+        self.id = console_id
+
+    def read(self) -> ConsoleData:
+        return self._rpc.read(self.id)
+
+    def write(self, data: str, add_new_line: bool = True) -> None:
+        self._rpc.write(self.id, data, add_new_line)
+
+    def destroy(self) -> bool:
+        return self._rpc.destroy(self.id)
+
+    def tabs(self, line: str) -> List[str]:
+        return self._rpc.tabs(self.id, line)
+
+    def gather_output(self, timeout: float = None, reading_delay: float = 1) -> str:
+        """
+        Gather output from the console.
+        :param timeout: The maximum time to wait for the output
+        :param reading_delay: Delay between the readings
+        :return: Gathered output
+        """
+        if timeout is not None:
+            timeout = time.time() + timeout
+
+        output = ""
+        # TODO: shell wont be busy until the command is executed, check for the execution
+        while (console := self.read()).busy:
+            output += console.data
+
+            if timeout and time.time() >= timeout:
+                break
+            time.sleep(reading_delay)
+
+        return output
+
+    def clear_buffer(self) -> None:
+        """
+        Clear unread data from the console.
+        :return: None
+        """
+        self.read()
+
+    def execute(self, command: str, timeout: float = None, reading_delay: float = 1) -> str:
+        self.clear_buffer()
+        self.write(command)
+
+        return self.gather_output(timeout, reading_delay)
+
+
+class Consoles(ContextBase):
+    def __init__(self, context: Context):
+        super().__init__(context)
+        self.rpc = RPCConsoles(context)
+
+    def create(self, options: ConsoleOptions = None):
+        console_info = self.rpc.create(options)
+        return Console(self.rpc, console_info.id)
+
+    def all(self):
+        return self.rpc.list_consoles()

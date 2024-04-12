@@ -2,15 +2,23 @@ import urllib3
 from typing import Union
 
 from snek_sploit.lib.context import Context, RPCResponse
-from snek_sploit.lib.groups import Auth, Consoles, Core, DB, Health, Jobs, Modules, Plugins, Sessions
+from snek_sploit.lib.rpc.auth import Auth
+from snek_sploit.lib.rpc.consoles import Consoles
+from snek_sploit.lib.rpc.core import Core
+from snek_sploit.lib.rpc.db import DB
+from snek_sploit.lib.rpc.health import Health
+from snek_sploit.lib.rpc.jobs import Jobs
+from snek_sploit.lib.rpc.modules import Modules
+from snek_sploit.lib.rpc.plugins import Plugins
+from snek_sploit.lib.rpc.sessions import Sessions
 
 
-class Client:
+class MetasploitClient:
     def __init__(self, username: str, password: str, host: str = "127.0.0.1", port: int = 55553, uri: str = "/api/",
                  ssl: bool = True, certificate: str = "", log_in: bool = True, token: str = "",
                  disable_https_warnings: bool = False, timeout: Union[float, tuple] = None, verbose: bool = False):
         """
-        Client is used for communication with MSF RPC.
+        Client used for communication with MSF RPC.
         :param username: Username used for authentication
         :param password: Password used for authentication
         :param host: MSF RPC Host
@@ -27,33 +35,36 @@ class Client:
         if disable_https_warnings:
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-        self.context = Context(username, password, host, port, uri, ssl, certificate, token, timeout, verbose)
-        self.auth = Auth(self.context)
-        self.consoles = Consoles(self.context)
-        self.core = Core(self.context)
-        self.db = DB(self.context)
-        self.health = Health(self.context)
-        self.jobs = Jobs(self.context)
-        self.modules = Modules(self.context)
-        self.plugins = Plugins(self.context)
-        self.sessions = Sessions(self.context)
+        self._context = Context(username, password, host, port, uri, ssl, certificate, token, timeout, verbose)
+
+        self.auth = Auth(self._context)
+        self.consoles = Consoles(self._context)
+        self.core = Core(self._context)
+        self.db = DB(self._context)
+        self.health = Health(self._context)
+        self.jobs = Jobs(self._context)
+        self.modules = Modules(self._context)
+        self.plugins = Plugins(self._context)
+        self.sessions = Sessions(self._context)
 
         if log_in:
             self.login()
 
     def login(self) -> None:
         """
-        Wrapper for login.
+        Login.
         :return: None
         """
-        self.auth.login()
+        token = self.auth.login()
+        self._context.token = token
+        self.auth.rpc.token_add(token)
 
     def logout(self) -> None:
         """
-        Wrapper for logout.
+        Logout.
         :return: None
         """
-        self.auth.rpc.logout(self.context.token)
+        self.auth.rpc.logout(self._context.token)
 
     def call(self, endpoint: str, arguments: list = None, **kwargs) -> RPCResponse:
         """
@@ -63,4 +74,4 @@ class Client:
         :param kwargs: use_token, timeout
         :return: Raw RPC response
         """
-        return self.context.call(endpoint, arguments, **kwargs)
+        return self._context.call(endpoint, arguments, **kwargs)

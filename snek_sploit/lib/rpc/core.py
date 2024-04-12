@@ -2,7 +2,7 @@ from requests import ReadTimeout
 from dataclasses import dataclass
 from typing import Union, Dict
 
-from snek_sploit.lib.context import ContextBase
+from snek_sploit.lib.context import ContextBase, Context
 from snek_sploit.util import constants
 
 
@@ -240,3 +240,9 @@ class RPCCore(ContextBase):
         response = self._context.call(self.THREAD_KILL, [thread_id])
 
         return response[constants.B_RESULT] == constants.B_SUCCESS
+
+
+class Core(ContextBase):
+    def __init__(self, context: Context):
+        super().__init__(context)
+        self.rpc = RPCCore(context)

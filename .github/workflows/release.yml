@@ -1,0 +1,18 @@
+name: CI
+on:
+  release:
+    types:
+      - published
+jobs:
+  upload_package_to_pypi:
+    environment: production
+    name: Build and upload Python package to PyPI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the current repo
+        uses: actions/checkout@v4
+
+      - name: Build and publish to pypi
+        uses: JRubics/poetry-publish@v2.0
+        with:
+          pypi_token: ${{ secrets.PYPI_TOKEN }}

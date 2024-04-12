@@ -3,49 +3,57 @@ Python typed RPC client for Metasploit Framework.
 
 ![](logo.png)
 
-```python
-from snek_sploit import Client
-
-if __name__ == '__main__':
-    client = Client("msf", "root")
-    print(client.core.rpc.version())
-
-```
-
 ## Installation
 
 ```shell
 pip install snek-sploit
 ```
 
+## Usage
+
+```python
+from snek_sploit import MetasploitClient
+
+
+if __name__ == '__main__':
+    client = MetasploitClient("msf", "root")
+    print(client.core.rpc.version())
+
+```
+
 ## Starting MSF RPC server
-In console
+In Metasploit console:
 ```shell
 load msgrpc ServerHost=127.0.0.1 ServerPort=55553 User=msf Pass='root' SSL=true
 ```
 
-In the background
+In shell:
 ```shell
 msfrpcd -U msf -P root
 ```
 
-More information can be found in the [MSF official documentation](https://docs.rapid7.com/metasploit/rpc-api/).
-
-### Using the MSF's certificate
-Certificate is by default taken from `/root/.msf4/msf-ws-cert.pem` (use the `-c` flag to choose a different location). If it's not, generate it as mentioned [here](https://github.com/rapid7/metasploit-framework/issues/15569#issuecomment-901158008).
-
-## Running MSF with RPC using Docker Compose
-Make sure you've installed [Docker Compose](https://docs.docker.com/compose/install/).
-
-In case you don't want to set up MSF RPC on your own, here is a convenient Compose config with MSF RPC and database:
+With [Docker](https://docs.docker.com/engine/install/):
 ```shell
+docker run --tty --network host --detach sadparad1se/metasploit-framework:rpc
+```
+
+With [Docker Compose](https://docs.docker.com/compose/install/):
+```shell
+git clone https://github.com/SadParad1se/snek-sploit.git
+cd snek-sploit
 docker compose up -d
 ```
 
-[Link to the MSF image documentation](https://cryton.gitlab-pages.ics.muni.cz/cryton-documentation/latest/docker-settings/#metasploit-framework).
+You can find more information in the [Metasploit Framework documentation](https://docs.rapid7.com/metasploit/rpc-api/).
 
-## TODO list
-- Typing and parameter support for the DB RPC class
-- async vs sync version?
-- Add custom exceptions
-- Wrapper classes for easier [workflows](https://docs.metasploit.com/docs/using-metasploit/advanced/RPC/how-to-use-metasploit-messagepack-rpc.html#example-workflows) (session, console, etc.)
+### Using the MSF RPC certificate
+MSF RPC loads the SSL certificate by default from `/root/.msf4/msf-ws-cert.pem` (use the `-c` flag to choose a different location). If not, generate it as mentioned [here](https://github.com/rapid7/metasploit-framework/issues/15569#issuecomment-901158008).
+
+To use it in the client, save it locally and pass the path:
+```python
+from snek_sploit import MetasploitClient
+
+
+MetasploitClient("msf", "root", certificate="/path/to/cert.pem")
+
+```

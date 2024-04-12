@@ -1,7 +1,7 @@
 import time
 
-from snek_sploit import Client, MeterpreterSession, ShellSession, SessionInformation
-from snek_sploit.lib.rpc.module import ModuleType
+from snek_sploit import MetasploitClient, SessionMeterpreter, SessionShell, SessionInformation
+from snek_sploit.lib.rpc.modules import ModuleType
 import socket
 import subprocess
 
@@ -19,7 +19,7 @@ def create_connection(target, port=4444):
 
 
 if __name__ == '__main__':
-    client = Client("msf", "root", disable_https_warnings=True, verbose=True)
+    client = MetasploitClient("msf", "root", disable_https_warnings=True, verbose=True)
     for each in client.modules.rpc.search("payload/python"):
         print(each.fullname)
     # Run in one terminal, then comment and test sessions freely
