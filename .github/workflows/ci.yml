@@ -44,14 +44,15 @@ jobs:
         with:
           context: ./metasploit-framework
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: |
             sadparad1se/metasploit-framework:${{ steps.metasploit_setup.outputs.latest_tag }}
             sadparad1se/metasploit-framework:${{ steps.metasploit_setup.outputs.latest_minor_tag }}
             sadparad1se/metasploit-framework:${{ steps.metasploit_setup.outputs.latest_major_tag }}
             sadparad1se/metasploit-framework:latest
           labels: |
-            version=${{ steps.metasploit_setup.outputs.latest_tag }}
-            commit=$GITHUB_SHA
+            msf-version=${{ steps.metasploit_setup.outputs.latest_tag }}
+            snek-sploit-commit=$GITHUB_SHA
 
       - name: Check out the current repo
         uses: actions/checkout@v4
@@ -61,11 +62,12 @@ jobs:
         with:
           context: .
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: |
             sadparad1se/metasploit-framework:rpc-${{ steps.metasploit_setup.outputs.latest_tag }}
             sadparad1se/metasploit-framework:rpc-${{ steps.metasploit_setup.outputs.latest_minor_tag }}
             sadparad1se/metasploit-framework:rpc-${{ steps.metasploit_setup.outputs.latest_major_tag }}
             sadparad1se/metasploit-framework:rpc
           labels: |
-            version=${{ steps.metasploit_setup.outputs.latest_tag }}
-            commit=$GITHUB_SHA
+            msf-version=${{ steps.metasploit_setup.outputs.latest_tag }}
+            snek-sploit-commit=$GITHUB_SHA

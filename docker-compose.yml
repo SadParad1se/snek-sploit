@@ -1,21 +1,15 @@
-version: '3.9'
 services:
   metasploit:
     restart: always
-    image: registry.gitlab.ics.muni.cz:443/cryton/configurations/metasploit-framework:0
+    image: sadparad1se/metasploit-framework:rpc
     container_name: metasploit
     network_mode: host
     environment:
-      MSF_RPC_HOST: 127.0.0.1
-      MSF_RPC_PORT: 55553
-      MSF_RPC_SSL: true
-      MSF_RPC_USERNAME: msf
-      MSF_RPC_PASSWORD: root
-      MSF_DB_HOST: 127.0.0.1
-      MSF_DB_PORT: 5432
-      MSF_DB_NAME: msf
-      MSF_DB_USERNAME: msf
-      MSF_DB_PASSWORD: msf
+      METASPLOIT_DB_HOST: 127.0.0.1
+      METASPLOIT_DB_PORT: 5432
+      METASPLOIT_DB_NAME: msf
+      METASPLOIT_DB_USERNAME: msf
+      METASPLOIT_DB_PASSWORD: msf
     tty: true
     depends_on:
       metasploit_db:
@@ -23,7 +17,7 @@ services:
 
   metasploit_db:
     restart: always
-    image: postgres:15
+    image: postgres:16
     container_name: metasploit-db
     environment:
       POSTGRES_PASSWORD: msf
@@ -31,7 +25,7 @@ services:
       POSTGRES_DB: msf
       POSTGRES_HOST_AUTH_METHOD: md5
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - msf_db_data:/var/lib/postgresql/data
     healthcheck:
       test: /usr/bin/pg_isready -U $$POSTGRES_USER
       interval: 5s
@@ -41,4 +35,4 @@ services:
       - "127.0.0.1:5432:5432"
 
 volumes:
-  db_data:
+  msf_db_data:
