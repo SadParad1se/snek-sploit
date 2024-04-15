@@ -3,7 +3,7 @@ import msgpack
 from abc import ABC
 from typing import Union, List, Dict
 
-from snek_sploit.util import constants
+from snek_sploit.util import constants, exceptions
 
 
 ResponseDict = Dict[Union[int, str, bytes], Union[int, str, bytes, list, dict, bool]]
@@ -62,7 +62,7 @@ class Context:
         :param use_token: Whether to use the context token or not
         :param timeout: Timeout for the call
         :return: Unprocessed endpoint response
-        :raise Exception: In case the response contains errors, raise an Exception
+        :raise RPCError: In case the response contains errors
         :full error example:
             {'error': True, 'error_class': 'Msf::RPC::Exception', 'error_string': 'Msf::RPC::Exception',
              'error_backtrace': ["lib/msf/core/rpc/v10/rpc_base.rb:26:in `error'", ...],
@@ -78,9 +78,8 @@ class Context:
         if self.verbose:
             print(response)
 
-        # TODO: add custom error classes and raise different errors
         if isinstance(response, dict) and response.get(constants.ERROR) is not None:
-            raise Exception(response)
+            raise exceptions.RPCError(response)
 
         return response
 

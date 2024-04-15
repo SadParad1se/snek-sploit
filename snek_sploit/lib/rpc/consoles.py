@@ -3,7 +3,7 @@ from typing import List
 import time
 
 from snek_sploit.lib.context import ContextBase, Context
-from snek_sploit.util import constants
+from snek_sploit.util import constants, exceptions
 
 
 @dataclass
@@ -108,7 +108,7 @@ class RPCConsoles(ContextBase):
         response = self._context.call(self.DESTROY, [console_id])
 
         if response[constants.B_RESULT] == constants.B_FAILURE:
-            raise Exception("Invalid console ID")
+            raise exceptions.InputError("Invalid console ID")
 
         return response[constants.B_RESULT] == constants.B_SUCCESS
 
@@ -136,7 +136,7 @@ class RPCConsoles(ContextBase):
         response = self._context.call(self.READ, [console_id])
 
         if response.get(constants.B_RESULT) == constants.B_FAILURE:
-            raise Exception("Invalid console ID")
+            raise exceptions.InputError("Invalid console ID")
 
         return self._parse_console_data(response)
 
@@ -155,7 +155,7 @@ class RPCConsoles(ContextBase):
         response = self._context.call(self.WRITE, [console_id, data])
 
         if response.get(constants.B_RESULT) == constants.B_FAILURE:
-            raise Exception("Invalid console ID")
+            raise exceptions.InputError("Invalid console ID")
 
         return response[constants.B_WROTE]
 
@@ -170,7 +170,7 @@ class RPCConsoles(ContextBase):
         response = self._context.call(self.TABS, [console_id, line])
 
         if response.get(constants.B_RESULT) == constants.B_FAILURE:
-            raise Exception("Invalid console ID")
+            raise exceptions.InputError("Invalid console ID")
 
         return [tab.decode() for tab in response[constants.B_TABS]]
 
@@ -185,7 +185,7 @@ class RPCConsoles(ContextBase):
         response = self._context.call(self.SESSION_KILL, [console_id])
 
         if response[constants.B_RESULT] == constants.B_FAILURE:
-            raise Exception("Invalid console ID")
+            raise exceptions.InputError("Invalid console ID")
 
         return response[constants.B_RESULT] == constants.B_SUCCESS
 
@@ -199,7 +199,7 @@ class RPCConsoles(ContextBase):
         response = self._context.call(self.SESSION_DETACH, [console_id])
 
         if response[constants.B_RESULT] == constants.B_FAILURE:
-            raise Exception("Invalid console ID")
+            raise exceptions.InputError("Invalid console ID")
 
         return response[constants.B_RESULT] == constants.B_SUCCESS
 

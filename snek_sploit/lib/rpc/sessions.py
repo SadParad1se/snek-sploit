@@ -4,7 +4,7 @@ from dataclasses import dataclass, asdict
 import time
 
 from snek_sploit.lib.context import ContextBase, Context
-from snek_sploit.util import constants
+from snek_sploit.util import constants, exceptions
 from snek_sploit.util.enums import SessionType
 
 
@@ -411,7 +411,9 @@ class Session(ABC):
         try:
             self.info = info if info is not None else self.fetch_information()
         except Exception:
-            raise Exception(f"Unable to fetch information about the session with id {self.id}. Make sure it exists.")
+            raise exceptions.InputError(
+                f"Unable to fetch information about the session with id {self.id}. Make sure it exists."
+            )
 
     def fetch_information(self) -> SessionInformation:
         return self._rpc.list_sessions()[self.id]
@@ -572,7 +574,10 @@ class Sessions(ContextBase):
         self.rpc = RPCSessions(context)
 
     def get(self, session_id: int) -> Union[SessionShell, SessionMeterpreter, SessionRing]:
-        session_info = self.rpc.list_sessions()[session_id]
+        try:
+            session_info = self.rpc.list_sessions()[session_id]
+        except KeyError:
+            raise exceptions.InputError(f"Session with ID {session_id} doesn't exist.")
         session_type = session_info.type
         if session_type == SessionType.SHELL:
             return SessionShell(self.rpc, session_id, session_info)

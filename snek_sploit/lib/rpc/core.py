@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Union, Dict
 
 from snek_sploit.lib.context import ContextBase, Context
-from snek_sploit.util import constants
+from snek_sploit.util import constants, exceptions
 
 
 @dataclass
@@ -140,7 +140,7 @@ class RPCCore(ContextBase):
 
         value = response[variable.encode()]
         if value == "":
-            raise Exception("Undefined variable")
+            raise exceptions.InputError("Undefined variable")
 
         return value.decode()
 
