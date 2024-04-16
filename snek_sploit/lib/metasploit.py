@@ -55,9 +55,7 @@ class MetasploitClient:
         Login.
         :return: None
         """
-        token = self.auth.login()
-        self._context.token = token
-        self.auth.rpc.token_add(token)
+        self.auth.login()
 
     def logout(self) -> None:
         """
