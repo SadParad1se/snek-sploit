@@ -121,11 +121,11 @@ Whether to use prepared statements.
 
 Default: `true`
 
-Set to `false` if using an external pooler like PgBouncer (before 1.21.0).
+Set to `false` if using an external pooler like PgBouncer.
 
 ### `METASPLOIT_DB_ADVISORY_LOCKS`
 Whether to use advisory locks.
 
 Default: `true`
 
-Set to `false` if using an external pooler like PgBouncer (before 1.21.0).
+Set to `false` if using an external pooler like PgBouncer.

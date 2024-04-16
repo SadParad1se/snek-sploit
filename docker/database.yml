@@ -1,5 +1,5 @@
 development: &pgsql
-  adapter: "postgresql"
+  adapter: postgresql
   host: <%= ENV['METASPLOIT_DB_HOST'] %>
   port: <%= ENV['METASPLOIT_DB_PORT'] %>
   database: <%= ENV['METASPLOIT_DB_NAME'] %>

@@ -10,7 +10,7 @@ run_single("setg LHOST #{lhost}")
 
 # Update the DB config
 require 'erb'
-template = ERB.new File.read("/usr/src/metasploit-framework/config/database.yml"), nil, "%"
+template = ERB.new(File.read("/usr/src/metasploit-framework/config/database.yml"))
 File.open('/usr/src/metasploit-framework/config/database.yml', 'w') { |f| f.write(template.result(binding)) }
 
 # Connect to the DB
