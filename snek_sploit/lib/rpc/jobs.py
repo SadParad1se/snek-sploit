@@ -17,6 +17,7 @@ class RPCJobs(ContextBase):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Job.html
     """
+
     INFO = "job.info"
     LIST = "job.list"
     STOP = "job.stop"
@@ -27,8 +28,10 @@ class RPCJobs(ContextBase):
             response[constants.JID],
             response[constants.NAME].decode(),
             response[constants.START_TIME],
-            {key.decode() if isinstance(key, bytes) else key: value
-             for key, value in response[constants.DATASTORE].items()}
+            {
+                key.decode() if isinstance(key, bytes) else key: value
+                for key, value in response[constants.DATASTORE].items()
+            },
         )
 
     def info(self, job_id: int) -> JobInformation:

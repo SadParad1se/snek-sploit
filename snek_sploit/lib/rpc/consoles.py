@@ -11,6 +11,7 @@ class ConsoleInfo:
     """
     Information about the console.
     """
+
     id: int
     prompt: str
     busy: bool
@@ -21,6 +22,7 @@ class ConsoleData:
     """
     Information about the console, including returned data.
     """
+
     prompt: str
     busy: bool
     data: str
@@ -35,6 +37,7 @@ class ConsoleOptions:
     https://github.com/rapid7/metasploit-framework/blob/master/lib/msf/ui/web/web_console.rb#L46C10-L46C10
     https://github.com/rapid7/metasploit-framework/blob/master/lib/msf/ui/console/driver.rb
     """
+
     workspace: str = None  # Use a workspace
     Readline: bool = None  # Whether to use the readline or not
     RealReadline: bool = None  # Whether to use the system's readline library instead of RBReadline
@@ -50,6 +53,7 @@ class RPCConsoles(ContextBase):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Console.html
     """
+
     CREATE = "console.create"
     DESTROY = "console.destroy"
     LIST = "console.list"
@@ -67,9 +71,7 @@ class RPCConsoles(ContextBase):
         :return: Information about the console
         """
         return ConsoleInfo(
-            int(response[constants.B_ID]),
-            response[constants.B_PROMPT].decode(),
-            response[constants.B_BUSY]
+            int(response[constants.B_ID]), response[constants.B_PROMPT].decode(), response[constants.B_BUSY]
         )
 
     @staticmethod
@@ -80,9 +82,7 @@ class RPCConsoles(ContextBase):
         :return: Information about the console and its data
         """
         return ConsoleData(
-            response[constants.B_PROMPT].decode(),
-            response[constants.B_BUSY],
-            response[constants.B_DATA].decode()
+            response[constants.B_PROMPT].decode(), response[constants.B_BUSY], response[constants.B_DATA].decode()
         )
 
     def create(self, options: ConsoleOptions = None) -> ConsoleInfo:

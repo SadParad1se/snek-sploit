@@ -12,9 +12,19 @@ RPCResponse = Union[ResponseDict, str, ResponseList]
 
 
 class Context:
-    def __init__(self, username: str, password: str, host: str = "127.0.0.1", port: int = 55553, uri: str = "/api/",
-                 ssl: bool = True, certificate: str = "", token: str = "", timeout: Union[float, tuple] = None,
-                 verbose: bool = False):
+    def __init__(
+        self,
+        username: str,
+        password: str,
+        host: str = "127.0.0.1",
+        port: int = 55553,
+        uri: str = "/api/",
+        ssl: bool = True,
+        certificate: str = "",
+        token: str = "",
+        timeout: Union[float, tuple] = None,
+        verbose: bool = False,
+    ):
         """
         Context holds information used for authentication and communication with MSF RPC.
         :param username: Username used for authentication
@@ -53,8 +63,9 @@ class Context:
 
         return arguments
 
-    def call(self, endpoint: str, arguments: list = None, use_token: bool = True,
-             timeout: Union[float, tuple] = None) -> RPCResponse:
+    def call(
+        self, endpoint: str, arguments: list = None, use_token: bool = True, timeout: Union[float, tuple] = None
+    ) -> RPCResponse:
         """
         Create a call to an endpoint.
         :param endpoint: Endpoint name

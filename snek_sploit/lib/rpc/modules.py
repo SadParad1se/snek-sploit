@@ -11,6 +11,7 @@ class ModuleShortInfo:
     """
     Short module information.
     """
+
     type: str
     name: str
     fullname: str
@@ -23,6 +24,7 @@ class ModuleRunningStatistics:
     """
     Jobs' statistics. Matched using job's UUID.
     """
+
     waiting: List[str]
     running: List[str]
     results: List[str]
@@ -33,8 +35,10 @@ class ModuleExecutionInfo:
     """
     Execution information.
     """
+
     job_id: int
     uuid: str
+
 
 # @dataclass
 # class DatastoreOption:  # TODO: some are probably missing, needs more research and testing
@@ -62,6 +66,7 @@ class EncodingOptions:
         template_path: Template path
         addshellcode: Custom shellcode
     """
+
     format: str = None
     badchars: str = None
     platform: str = None
@@ -77,6 +82,7 @@ class RPCModules(ContextBase):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Module.html
     """
+
     EXPLOITS = "module.exploits"
     EVASION = "module.evasion"
     AUXILIARY = "module.auxiliary"
@@ -117,7 +123,7 @@ class RPCModules(ContextBase):
             response[constants.B_NAME],
             response[constants.B_FULLNAME],
             response[constants.B_RANK].decode(),
-            response[constants.B_DISCLOSURE_DATE].decode()
+            response[constants.B_DISCLOSURE_DATE].decode(),
         )
 
     # TODO: once the DatastoreOption dataclass is implemented
@@ -165,8 +171,9 @@ class RPCModules(ContextBase):
 
         return response[constants.B_MODULES]
 
-    def list_payload_modules(self, fields: List[str] = None, architectures: List[str] = None) \
-            -> Union[List[str], Dict[str, Dict[str, str]]]:
+    def list_payload_modules(
+        self, fields: List[str] = None, architectures: List[str] = None
+    ) -> Union[List[str], Dict[str, Dict[str, str]]]:
         # TODO: split into 2 methods?
         # TODO: can the dict in dict (fields) have a different value?
         """
@@ -188,8 +195,9 @@ class RPCModules(ContextBase):
 
         return response[constants.B_MODULES]
 
-    def list_encoder_modules(self, fields: List[str] = None, architectures: List[str] = None) \
-            -> Union[List[str], Dict[str, Dict[str, str]]]:
+    def list_encoder_modules(
+        self, fields: List[str] = None, architectures: List[str] = None
+    ) -> Union[List[str], Dict[str, Dict[str, str]]]:
         # TODO: split into 2 methods?
         # TODO: can the dict in dict (fields) have a different value?
         """
@@ -211,8 +219,9 @@ class RPCModules(ContextBase):
 
         return response[constants.B_MODULES]
 
-    def list_nop_modules(self, fields: List[str] = None, architectures: List[str] = None) \
-            -> Union[List[str], Dict[str, Dict[str, str]]]:
+    def list_nop_modules(
+        self, fields: List[str] = None, architectures: List[str] = None
+    ) -> Union[List[str], Dict[str, Dict[str, str]]]:
         # TODO: split into 2 methods?
         # TODO: can the dict in dict (fields) have a different value?
         """
@@ -361,11 +370,12 @@ class RPCModules(ContextBase):
         return ModuleRunningStatistics(
             [each.decode() for each in response[constants.B_WAITING]],
             [each.decode() for each in response[constants.B_RUNNING]],
-            response[constants.B_RESULTS]
+            response[constants.B_RESULTS],
         )
 
-    def list_module_options(self, module_type: ModuleType, module_name: str) \
-            -> Dict[str, Dict[str, Union[dict, list, str, bool, int]]]:
+    def list_module_options(
+        self, module_type: ModuleType, module_name: str
+    ) -> Dict[str, Dict[str, Union[dict, list, str, bool, int]]]:
         """
         Get module's datastore options.
         :param module_type: Module type

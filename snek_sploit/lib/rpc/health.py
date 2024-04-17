@@ -6,6 +6,7 @@ class RPCHealth(ContextBase):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Health.html
     """
+
     CHECK = "health.check"
 
     def check(self) -> bool:
