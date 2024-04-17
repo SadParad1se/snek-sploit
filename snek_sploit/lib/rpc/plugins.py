@@ -8,6 +8,7 @@ class RPCPlugins(ContextBase):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Plugin.html
     """
+
     LOAD = "plugin.load"
     UNLOAD = "plugin.unload"
     LOADED = "plugin.loaded"

@@ -11,6 +11,7 @@ class ModuleStatistics:
     """
     Number of installed modules.
     """
+
     exploits: int
     auxiliary: int
     post: int
@@ -25,6 +26,7 @@ class VersionInformation:
     """
     Information about framework versions.
     """
+
     version: str
     ruby: str
     api: str
@@ -35,6 +37,7 @@ class FrameworkThread:
     """
     Information about framework thread.
     """
+
     status: str
     critical: bool
     name: str
@@ -45,6 +48,7 @@ class RPCCore(ContextBase):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Core.html
     """
+
     VERSION = "core.version"
     STOP = "core.stop"
     GETG = "core.getg"
@@ -65,9 +69,7 @@ class RPCCore(ContextBase):
         :return: Parsed version information
         """
         return VersionInformation(
-            response[constants.B_VERSION],
-            response[constants.B_RUBY].decode(),
-            response[constants.B_API].decode()
+            response[constants.B_VERSION], response[constants.B_RUBY].decode(), response[constants.B_API].decode()
         )
 
     @staticmethod
@@ -98,7 +100,7 @@ class RPCCore(ContextBase):
             response[constants.STATUS].decode(),
             response[constants.CRITICAL],
             response[constants.NAME],
-            response[constants.STARTED]
+            response[constants.STARTED],
         )
 
     def version(self) -> VersionInformation:

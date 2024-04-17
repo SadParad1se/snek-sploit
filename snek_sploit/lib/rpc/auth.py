@@ -8,6 +8,7 @@ class RPCAuth(ContextBase):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Auth.html
     """
+
     LOGIN = "auth.login"
     LOGOUT = "auth.logout"
     TOKEN_ADD = "auth.token_add"

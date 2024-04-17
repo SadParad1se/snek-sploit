@@ -32,6 +32,7 @@ class SessionInformation:
         arch: Architecture
         platform: Platform (Only if the session type is `meterpreter`)
     """
+
     type: str = None
     tunnel_local: str = None
     tunnel_peer: str = None
@@ -58,8 +59,11 @@ class SessionInformation:
         this = asdict(self)
         for key, o_value in asdict(other).items():
             t_value = this[key]
-            if o_value is not None and t_value is not None \
-                    and ((strict and o_value != t_value) or (not strict and o_value not in t_value)):
+            if (
+                o_value is not None
+                and t_value is not None
+                and ((strict and o_value != t_value) or (not strict and o_value not in t_value))
+            ):
                 return False
 
         return True
@@ -87,6 +91,7 @@ class MeterpreterSessionTransportOptions:
         retry_wait: The number of seconds to wait between retries
         cert: Path to the SSL Cert to use for HTTPS
     """
+
     transport: str
     lhost: str
     lport: str
@@ -107,6 +112,7 @@ class RPCSessions(ContextBase):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Session.html
     """
+
     LIST = "session.list"
     STOP = "session.stop"
     SHELL_READ = "session.shell_read"
@@ -152,7 +158,7 @@ class RPCSessions(ContextBase):
             parsed_response[constants.EXPLOIT_UUID],
             parsed_response[constants.ROUTES],
             parsed_response[constants.ARCH],
-            parsed_response.get(constants.PLATFORM, "")
+            parsed_response.get(constants.PLATFORM, ""),
         )
 
     def list_sessions(self) -> Dict[int, SessionInformation]:
@@ -433,12 +439,23 @@ class Session(ABC):
         pass
 
     @abstractmethod
-    def execute(self, command: str, minimal_execution_time: float, timeout: float, success_flags: List[str],
-                reading_delay: float) -> str:
+    def execute(
+        self,
+        command: str,
+        minimal_execution_time: float,
+        timeout: float,
+        success_flags: List[str],
+        reading_delay: float,
+    ) -> str:
         pass
 
-    def gather_output(self, minimal_execution_time: float = 3, timeout: float = None, success_flags: List[str] = None,
-                      reading_delay: float = 1) -> str:
+    def gather_output(
+        self,
+        minimal_execution_time: float = 3,
+        timeout: float = None,
+        success_flags: List[str] = None,
+        reading_delay: float = 1,
+    ) -> str:
         """
         Gather output from the session.
         :param minimal_execution_time: The minimum amount of seconds to wait before exiting in case no output is read
@@ -497,8 +514,14 @@ class SessionShell(Session):
         #  module: post/multi/manage/shell_to_meterpreter
         return False
 
-    def execute(self, command: str, minimal_execution_time: float = 3, timeout: float = None,
-                success_flags: List[str] = None, reading_delay: float = 1) -> str:
+    def execute(
+        self,
+        command: str,
+        minimal_execution_time: float = 3,
+        timeout: float = None,
+        success_flags: List[str] = None,
+        reading_delay: float = 1,
+    ) -> str:
         self.clear_buffer()
         self.write(command)
 
@@ -535,15 +558,28 @@ class SessionMeterpreter(Session):
     def change_transport(self, options: MeterpreterSessionTransportOptions) -> bool:
         return self._rpc.meterpreter_transport_change(self.id, options)
 
-    def execute(self, command: str, minimal_execution_time: float = 3, timeout: float = None,
-                success_flags: List[str] = None, reading_delay: float = 1) -> str:
+    def execute(
+        self,
+        command: str,
+        minimal_execution_time: float = 3,
+        timeout: float = None,
+        success_flags: List[str] = None,
+        reading_delay: float = 1,
+    ) -> str:
         self.clear_buffer()
         self.write(command)
 
         return self.gather_output(minimal_execution_time, timeout, success_flags, reading_delay)
 
-    def execute_in_shell(self, command: str, arguments: List[str], minimal_execution_time: float = 3,
-                         timeout: float = None, success_flags: List[str] = None, reading_delay: float = 1) -> str:
+    def execute_in_shell(
+        self,
+        command: str,
+        arguments: List[str],
+        minimal_execution_time: float = 3,
+        timeout: float = None,
+        success_flags: List[str] = None,
+        reading_delay: float = 1,
+    ) -> str:
         self.clear_buffer()
 
         # TODO: test with custom x64 payload
@@ -560,8 +596,14 @@ class SessionRing(Session):
     def read(self) -> str:
         return self._rpc.ring_read(self.id)
 
-    def execute(self, command: str, minimal_execution_time: float = 3, timeout: float = None,
-                success_flags: List[str] = None, reading_delay: float = 1) -> str:
+    def execute(
+        self,
+        command: str,
+        minimal_execution_time: float = 3,
+        timeout: float = None,
+        success_flags: List[str] = None,
+        reading_delay: float = 1,
+    ) -> str:
         self.clear_buffer()
         self.write(command)
 

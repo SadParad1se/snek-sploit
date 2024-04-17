@@ -31,6 +31,7 @@ class AnalyzeHostOptions:
     """
     Options used to get module suggestions.
     """
+
     workspace: str  # Name of the workspace
     addr: str  # Host address
     address: str  # Same as addr
@@ -48,6 +49,7 @@ class RPCDB(ContextBase):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Db.html
     """
+
     CREATE_CRACKED_CREDENTIAL = "db.create_cracked_credential"
     CREATE_CREDENTIAL = "db.create_credential"
     INVALIDATE_LOGIN = "db.invalidate_login"

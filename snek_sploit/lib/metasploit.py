@@ -14,9 +14,21 @@ from snek_sploit.lib.rpc.sessions import Sessions
 
 
 class MetasploitClient:
-    def __init__(self, username: str, password: str, host: str = "127.0.0.1", port: int = 55553, uri: str = "/api/",
-                 ssl: bool = True, certificate: str = "", log_in: bool = True, token: str = "",
-                 disable_https_warnings: bool = False, timeout: Union[float, tuple] = None, verbose: bool = False):
+    def __init__(
+        self,
+        username: str,
+        password: str,
+        host: str = "127.0.0.1",
+        port: int = 55553,
+        uri: str = "/api/",
+        ssl: bool = True,
+        certificate: str = "",
+        log_in: bool = True,
+        token: str = "",
+        disable_https_warnings: bool = False,
+        timeout: Union[float, tuple] = None,
+        verbose: bool = False,
+    ):
         """
         Client used for communication with MSF RPC.
         :param username: Username used for authentication
