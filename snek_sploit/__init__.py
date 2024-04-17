@@ -16,7 +16,10 @@ __all__ = [
     "MeterpreterSessionTransportOptions",
     "SessionShell",
     "SessionMeterpreter",
-    "SessionRing"
+    "SessionRing",
+    "Error",
+    "InputError",
+    "RPCError"
 ]
 
 from snek_sploit.lib.metasploit import MetasploitClient
@@ -33,3 +36,4 @@ from snek_sploit.lib.rpc.modules import (
 from snek_sploit.lib.rpc.sessions import (
     SessionInformation, MeterpreterSessionTransportOptions, SessionShell, SessionMeterpreter, SessionRing
 )
+from snek_sploit.util.exceptions import Error, InputError, RPCError
