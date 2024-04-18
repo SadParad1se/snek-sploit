@@ -1,0 +1,19 @@
+name: Tests
+on:
+  push
+jobs:
+  validate_application_code:
+    name: Validate application code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the current repo
+        uses: actions/checkout@v4
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+
+      - name: Install snek-sploit
+        run: poetry install
+
+      - name: Run Black
+        run: poetry run black --check --diff snek_sploit/
