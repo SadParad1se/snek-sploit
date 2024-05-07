@@ -232,8 +232,7 @@ class Console:
             timeout = time.time() + timeout
 
         output = ""
-        # TODO: shell wont be busy until the command is executed, check for the execution
-        while (console := self.read()).busy:
+        while (console := self.read()).busy or console.data or not output:
             output += console.data
 
             if timeout and time.time() >= timeout:
