@@ -232,6 +232,9 @@ class Console:
             timeout = time.time() + timeout
 
         output = ""
+        # TODO: still can cut short, add either wait_for_busy flag, check_for_output flag, bigger reading_delay,
+        #  or add metasploit plugin
+        # TODO: wait_for_busy can also end badly
         while (console := self.read()).busy or console.data or not output:
             output += console.data
 
