@@ -1,4 +1,12 @@
 services:
   metasploit:
     image: metasploit-framework-rpc
-    build: .
+    build:
+      context: .
+      target: msf-rpc
+
+  ruby-development-environment:
+    image: ruby-development-environment
+    build:
+      context: .
+      target: ruby-development-environment

@@ -21,4 +21,5 @@ rpc_ssl = ENV['METASPLOIT_RPC_SSL']
 rpc_username = ENV['METASPLOIT_RPC_USERNAME']
 rpc_password = ENV['METASPLOIT_RPC_PASSWORD']
 run_single("load msgrpc ServerHost=#{rpc_host} ServerPort=#{rpc_port} User=#{rpc_username} Pass='#{rpc_password}' SSL=#{rpc_ssl}")
+run_single("load snek")
 </ruby>

@@ -64,6 +64,7 @@ jobs:
       - name: Build and push Docker image for MSF running RPC
         uses: docker/build-push-action@v5
         with:
+          target: msf-rpc
           context: .
           push: true
           platforms: linux/amd64,linux/arm64
