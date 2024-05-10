@@ -1,3 +1,5 @@
+import random
+import string
 from dataclasses import dataclass, asdict
 from typing import List
 import time
@@ -221,23 +223,33 @@ class Console:
     def tabs(self, line: str) -> List[str]:
         return self._rpc.tabs(self.id, line)
 
-    def gather_output(self, timeout: float = None, reading_delay: float = 1) -> str:
+    def gather_output(
+        self, timeout: float = None, reading_delay: float = 1, end_check: str = "", end_check_hard_stop: bool = False
+    ) -> str:
         """
         Gather output from the console.
         :param timeout: The maximum time to wait for the output
         :param reading_delay: Delay between the readings
+        :param end_check: String that is checked regularly to check whether the execution has finished
+        :param end_check_hard_stop: Whether to exit once the `end_check` is found
         :return: Gathered output
         """
         if timeout is not None:
             timeout = time.time() + timeout
 
         output = ""
-        # TODO: shell wont be busy until the command is executed, check for the execution
-        while (console := self.read()).busy:
+        end_is_nigh = False
+        while (console := self.read()).busy or console.data or not output or (end_check and not end_is_nigh):
             output += console.data
+
+            if end_check and end_check in console.data:
+                if end_check_hard_stop:
+                    break
+                end_is_nigh = True  # In case the console is still busy, continue to gather the data
 
             if timeout and time.time() >= timeout:
                 break
+
             time.sleep(reading_delay)
 
         return output
@@ -249,11 +261,34 @@ class Console:
         """
         self.read()
 
-    def execute(self, command: str, timeout: float = None, reading_delay: float = 1) -> str:
+    def execute(
+        self,
+        command: str,
+        timeout: float = None,
+        reading_delay: float = 1,
+        end_check: str = "",
+        generate_end_check: bool = True,
+        end_check_hard_stop: bool = False,
+    ) -> str:
+        """
+        Execute a command or a set of commands (separated with `\n`) and gather it's output.
+        By default, an end_check is generated and appended to the command to ensure the whole output is captured.
+        :param command: Command that will be executed in the console.
+        :param timeout: The maximum time to wait for the output
+        :param reading_delay: Delay between the readings
+        :param end_check: String that is checked regularly to check whether the execution has finished
+        :param generate_end_check: If `end_check` is empty, generate a custom one and add it to the command
+        :param end_check_hard_stop: Whether to exit once the `end_check` is found and discard the rest of the output
+        :return: Execution output
+        """
+        if not end_check and generate_end_check:
+            end_check = "".join(random.choices(string.ascii_letters + string.digits, k=20))
+            command += f"\necho '{end_check}'"
+
         self.clear_buffer()
         self.write(command)
 
-        return self.gather_output(timeout, reading_delay)
+        return self.gather_output(timeout, reading_delay, end_check, end_check_hard_stop)
 
 
 class Consoles(ContextBase):
