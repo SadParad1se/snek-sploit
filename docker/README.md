@@ -66,6 +66,12 @@ volumes:
 ## Environment variables
 These variables are only to be used with the `rpc*` tag.
 
+### `METASPLOIT_LHOST`
+Sets the `LHOST` global datastore option in msfconsole.
+
+### `METASPLOIT_LPORT`
+Sets the `LPORT` global datastore option in msfconsole.
+
 ### `METASPLOIT_RPC_HOST`
 Host to serve the RPC server at. 
 

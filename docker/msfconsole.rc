@@ -1,12 +1,9 @@
 <ruby>
-# Set LHOST
-run_single("setg LPORT #{ENV['LPORT']}") if ENV['LPORT']
-if ENV['LHOST']
-  lhost = ENV['LHOST']
-else
-  lhost = %x(hostname -i)
-end
-run_single("setg LHOST #{lhost}")
+# Set global LHOST
+run_single("setg LHOST #{ENV['METASPLOIT_LHOST']}") if ENV['METASPLOIT_LHOST']
+
+# Set global LPORT
+run_single("setg LPORT #{ENV['METASPLOIT_LPORT']}") if ENV['METASPLOIT_LPORT']
 
 # Update the DB config
 require 'erb'
