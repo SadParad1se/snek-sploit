@@ -21,6 +21,8 @@ if __name__ == '__main__':
 
 ```
 
+Examples can be found in the *[examples](https://github.com/SadParad1se/snek-sploit/tree/master/examples)* directory.
+
 ## Starting MSF RPC server
 In Metasploit console:
 ```shell
