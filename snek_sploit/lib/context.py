@@ -4,6 +4,7 @@ from abc import ABC
 from typing import Union, List, Dict
 
 from snek_sploit.util import constants, exceptions
+from snek_sploit.util.retry import retry
 
 
 ResponseDict = Dict[Union[int, str, bytes], Union[int, str, bytes, list, dict, bool]]
@@ -63,6 +64,7 @@ class Context:
 
         return arguments
 
+    @retry(tries=3, on_errors=(requests.RequestException,))
     def call(
         self, endpoint: str, arguments: list = None, use_token: bool = True, timeout: Union[float, tuple] = None
     ) -> RPCResponse:
