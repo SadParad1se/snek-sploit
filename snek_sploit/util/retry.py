@@ -26,6 +26,6 @@ def retry(func=None, *, attempts: int = 1, on_errors: tuple = None, wait_on_erro
                 if i + 1 == attempts:
                     raise ex
                 if wait_on_error:
-                    time.sleep(min(i + 1 * 2, 30))
+                    time.sleep(min(i + 1 * 3, 30))
 
     return wrapper
