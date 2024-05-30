@@ -64,7 +64,7 @@ class Context:
 
         return arguments
 
-    @retry(tries=3, on_errors=(requests.RequestException,))
+    @retry(attempts=3, on_errors=(requests.RequestException,))
     def call(
         self, endpoint: str, arguments: list = None, use_token: bool = True, timeout: Union[float, tuple] = None
     ) -> RPCResponse:
