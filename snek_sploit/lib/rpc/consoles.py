@@ -223,6 +223,9 @@ class Console:
     def tabs(self, line: str) -> List[str]:
         return self._rpc.tabs(self.id, line)
 
+    # TODO: end_check -> success_flags (change to list)
+    # TODO: success_flag_hard_stop
+    # TODO: do the same in sessions
     def gather_output(
         self, timeout: float = None, reading_delay: float = 1, end_check: str = "", end_check_hard_stop: bool = False
     ) -> str:

@@ -476,16 +476,20 @@ class Session(ABC):
         :param reading_delay: Delay between the readings
         :return: Gathered output
         """
-        output = ""
         timestamp = time.time()
-
         if timeout:
             timeout = timestamp + max(timeout, minimal_execution_time)
-
         minimal_execution_time = timestamp + minimal_execution_time
 
-        while (data := self.read()) or (time.time() < minimal_execution_time):
+        output = ""
+        end_is_nigh = False
+        while (data := self.read()) or (time.time() < minimal_execution_time) or not output:
             output += data
+
+            # if end_check and end_check in console.data:
+            #     if end_check_hard_stop:
+            #         break
+            #     end_is_nigh = True  # In case the console is still busy, continue to gather the data
 
             # TODO: switch to regex?
             # TODO: make sure at least the last 200 characters are tested, since the data can be split randomly?
