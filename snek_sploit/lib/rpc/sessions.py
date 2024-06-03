@@ -1,3 +1,4 @@
+import re
 from abc import ABC, abstractmethod
 from typing import List, Dict, Union
 from dataclasses import dataclass, asdict
@@ -439,58 +440,26 @@ class Session(ABC):
         pass
 
     @abstractmethod
-    def execute(
-        self,
-        command: str,
-        minimal_execution_time: float,
-        timeout: float,
-        success_flags: List[str],
-        reading_delay: float,
-    ) -> str:
+    def execute(self, command: str, timeout: float, reading_delay: float) -> str:
         pass
 
     @abstractmethod
-    def execute_in_shell(
-        self,
-        executable: str,
-        arguments: List[str],
-        minimal_execution_time: float,
-        timeout: float,
-        success_flags: List[str],
-        reading_delay: float,
-    ) -> str:
+    def execute_in_shell(self, executable: str, arguments: List[str], timeout: float, reading_delay: float) -> str:
         pass
 
-    def gather_output(
-        self,
-        minimal_execution_time: float = 3,
-        timeout: float = None,
-        success_flags: List[str] = None,
-        reading_delay: float = 1,
-    ) -> str:
+    def gather_output(self, timeout: float = None, reading_delay: float = 1) -> str:
         """
         Gather output from the session.
-        :param minimal_execution_time: The minimum amount of seconds to wait before exiting in case no output is read
         :param timeout: The maximum time to wait for the output
-        :param success_flags: Flags to indicate the gathered output is enough (one flag == stop gathering)
         :param reading_delay: Delay between the readings
         :return: Gathered output
         """
-        output = ""
-        timestamp = time.time()
-
         if timeout:
-            timeout = timestamp + max(timeout, minimal_execution_time)
+            timeout = time.time() + timeout
 
-        minimal_execution_time = timestamp + minimal_execution_time
-
-        while (data := self.read()) or (time.time() < minimal_execution_time):
+        output = ""
+        while (data := self.read()) or not output:  # All the data is returned at once
             output += data
-
-            # TODO: switch to regex?
-            # TODO: make sure at least the last 200 characters are tested, since the data can be split randomly?
-            if success_flags and any(flag in data for flag in success_flags):
-                break
 
             if timeout and time.time() >= timeout:
                 break
@@ -518,31 +487,18 @@ class SessionShell(Session):
     def upgrade_to_meterpreter(self, local_host: str, local_port: int) -> bool:
         return self._rpc.shell_upgrade(self.id, local_host, local_port)
 
-    def execute(
-        self,
-        command: str,
-        minimal_execution_time: float = 3,
-        timeout: float = None,
-        success_flags: List[str] = None,
-        reading_delay: float = 1,
-    ) -> str:
+    def execute(self, command: str, timeout: float = None, reading_delay: float = 1) -> str:
         self.clear_buffer()
         self.write(command)
 
-        return self.gather_output(minimal_execution_time, timeout, success_flags, reading_delay)
+        return self.gather_output(timeout, reading_delay)
 
     def execute_in_shell(
-        self,
-        executable: str,
-        arguments: List[str],
-        minimal_execution_time: float = 3,
-        timeout: float = None,
-        success_flags: List[str] = None,
-        reading_delay: float = 1,
+        self, executable: str, arguments: List[str], timeout: float = None, reading_delay: float = 1
     ) -> str:
         command = " ".join([executable, *arguments])
 
-        return self.execute(command, minimal_execution_time, timeout, success_flags, reading_delay)
+        return self.execute(command, timeout, reading_delay)
 
 
 class SessionMeterpreter(Session):
@@ -571,33 +527,32 @@ class SessionMeterpreter(Session):
     def change_transport(self, options: MeterpreterSessionTransportOptions) -> bool:
         return self._rpc.meterpreter_transport_change(self.id, options)
 
-    def execute(
-        self,
-        command: str,
-        minimal_execution_time: float = 3,
-        timeout: float = None,
-        success_flags: List[str] = None,
-        reading_delay: float = 1,
-    ) -> str:
+    def execute(self, command: str, timeout: float = None, reading_delay: float = 1) -> str:
         self.clear_buffer()
         self.write(command)
 
-        return self.gather_output(minimal_execution_time, timeout, success_flags, reading_delay)
+        return self.gather_output(timeout, reading_delay)
 
     def execute_in_shell(
         self,
         executable: str,
         arguments: List[str],
-        minimal_execution_time: float = 3,
         timeout: float = None,
-        success_flags: List[str] = None,
         reading_delay: float = 1,
     ) -> str:
-        # TODO: Remove the process ID from the output? eg. add postprocessing?
+        # TODO: Remove the process ID from the output? eg. add postprocessing? (will be in a separate method/wrapper)
         self.clear_buffer()
         self.run_single(f"execute -f {executable} -c -i -a {' '.join(arguments)}")
 
-        return self.gather_output(minimal_execution_time, timeout, success_flags, reading_delay)
+        return self.gather_output(timeout, reading_delay)
+
+    def gather_output(self, timeout: float = None, reading_delay: float = 1) -> str:
+        output = super().gather_output(timeout, reading_delay)
+        # This is primarily a hotfix for executing in a shell since it returns some info at the beginning
+        if not re.sub(r"Process \d+ created\.\nChannel \d+ created\.\n", "", output, 1):
+            output += super().gather_output(timeout, reading_delay)
+
+        return output
 
 
 class SessionRing(Session):
@@ -608,31 +563,18 @@ class SessionRing(Session):
     def read(self) -> str:
         return self._rpc.ring_read(self.id)
 
-    def execute(
-        self,
-        command: str,
-        minimal_execution_time: float = 3,
-        timeout: float = None,
-        success_flags: List[str] = None,
-        reading_delay: float = 1,
-    ) -> str:
+    def execute(self, command: str, timeout: float = None, reading_delay: float = 1) -> str:
         self.clear_buffer()
         self.write(command)
 
-        return self.gather_output(minimal_execution_time, timeout, success_flags, reading_delay)
+        return self.gather_output(timeout, reading_delay)
 
     def execute_in_shell(
-        self,
-        executable: str,
-        arguments: List[str],
-        minimal_execution_time: float = 3,
-        timeout: float = None,
-        success_flags: List[str] = None,
-        reading_delay: float = 1,
+        self, executable: str, arguments: List[str], timeout: float = None, reading_delay: float = 1
     ) -> str:
         command = " ".join([executable, *arguments])
 
-        return self.execute(command, minimal_execution_time, timeout, success_flags, reading_delay)
+        return self.execute(command, timeout, reading_delay)
 
 
 class Sessions(ContextBase):

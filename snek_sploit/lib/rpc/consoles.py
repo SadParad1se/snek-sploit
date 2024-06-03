@@ -1,7 +1,7 @@
 import random
 import string
 from dataclasses import dataclass, asdict
-from typing import List
+from typing import List, Optional, Union
 import time
 
 from snek_sploit.lib.context import ContextBase, Context
@@ -224,26 +224,33 @@ class Console:
         return self._rpc.tabs(self.id, line)
 
     def gather_output(
-        self, timeout: float = None, reading_delay: float = 1, end_check: str = "", end_check_hard_stop: bool = False
+        self,
+        timeout: float = None,
+        reading_delay: float = 1,
+        success_flags: Optional[Union[List[str], str]] = None,
+        success_flag_hard_stop: bool = False,
     ) -> str:
         """
         Gather output from the console.
         :param timeout: The maximum time to wait for the output
         :param reading_delay: Delay between the readings
-        :param end_check: String that is checked regularly to check whether the execution has finished
-        :param end_check_hard_stop: Whether to exit once the `end_check` is found
+        :param success_flags: Flags to indicate the gathered output is enough (one flag == stop gathering)
+        :param success_flag_hard_stop: Whether to exit once a success_flag is found
         :return: Gathered output
         """
-        if timeout is not None:
+        if isinstance(success_flags, str):
+            success_flags = [success_flags]
+
+        if timeout:
             timeout = time.time() + timeout
 
         output = ""
         end_is_nigh = False
-        while (console := self.read()).busy or console.data or not output or (end_check and not end_is_nigh):
+        while (console := self.read()).busy or console.data or not output or (success_flags and not end_is_nigh):
             output += console.data
 
-            if end_check and end_check in console.data:
-                if end_check_hard_stop:
+            if success_flags and any(flag in console.data for flag in success_flags):
+                if success_flag_hard_stop:
                     break
                 end_is_nigh = True  # In case the console is still busy, continue to gather the data
 
@@ -266,9 +273,9 @@ class Console:
         command: str,
         timeout: float = None,
         reading_delay: float = 1,
-        end_check: str = "",
-        generate_end_check: bool = True,
-        end_check_hard_stop: bool = False,
+        success_flags: Optional[Union[List[str], str]] = None,
+        generate_success_flag: bool = True,
+        success_flag_hard_stop: bool = False,
     ) -> str:
         """
         Execute a command or a set of commands (separated with `\n`) and gather it's output.
@@ -276,19 +283,19 @@ class Console:
         :param command: Command that will be executed in the console.
         :param timeout: The maximum time to wait for the output
         :param reading_delay: Delay between the readings
-        :param end_check: String that is checked regularly to check whether the execution has finished
-        :param generate_end_check: If `end_check` is empty, generate a custom one and add it to the command
-        :param end_check_hard_stop: Whether to exit once the `end_check` is found and discard the rest of the output
+        :param generate_success_flag: If `success_flags` is undefined, generate a custom one and add it to the command
+        :param success_flags: Flags to indicate the gathered output is enough (one flag == stop gathering)
+        :param success_flag_hard_stop: Whether to exit once a success_flag is found
         :return: Execution output
         """
-        if not end_check and generate_end_check:
-            end_check = "".join(random.choices(string.ascii_letters + string.digits, k=20))
-            command += f"\necho '{end_check}'"
+        if not success_flags and generate_success_flag:
+            success_flags = "".join(random.choices(string.ascii_letters + string.digits, k=20))
+            command += f"\necho '{success_flags}'"
 
         self.clear_buffer()
         self.write(command)
 
-        return self.gather_output(timeout, reading_delay, end_check, end_check_hard_stop)
+        return self.gather_output(timeout, reading_delay, success_flags, success_flag_hard_stop)
 
 
 class Consoles(ContextBase):
