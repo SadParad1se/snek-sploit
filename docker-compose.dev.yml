@@ -1,0 +1,4 @@
+services:
+  metasploit:
+    image: metasploit-framework-rpc
+    build: .
