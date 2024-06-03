@@ -208,17 +208,13 @@ class RPCSessions(ContextBase):
     def shell_write(self, session_id: int, data: str) -> int:
         """
         Write to a shell session (such as a command).
-        Note that you will to manually add a newline at the enf of your input so the system will process it.
         :param session_id: ID of the session
         :param data: Data (command) to write
         :return: Number of bytes written
         :full response example: {b'write_count': '8'}
         """
-        # Commands work without the add_new_line on linux (or the `\n` is ok)
-        # TODO: test if the newline must be added in case of other systems, if not, remove it from the docstring
-        # https://stackoverflow.com/a/3720674
-        # if add_new_line:
-        #     data += "\r\n"
+        if not data.endswith("\n"):
+            data += "\n"
 
         response = self._context.call(self.SHELL_WRITE, [session_id, data])
 
