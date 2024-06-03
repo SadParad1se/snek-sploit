@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "snek-sploit"
-version = "0.8.0"
+version = "0.8.1"
 description = "Python RPC client for Metasploit Framework"
 authors = [
     "Jiří Rája <jiri.raja@gmail.com>"
