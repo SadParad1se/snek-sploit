@@ -218,7 +218,7 @@ class RPCSessions(ContextBase):
 
         response = self._context.call(self.SHELL_WRITE, [session_id, data])
 
-        return int(response[constants.B_WRITE_COUNT]) if response.isdigit() else -1
+        return int(response[constants.B_WRITE_COUNT]) if response[constants.B_WRITE_COUNT].isdigit() else -1
 
     def shell_upgrade(self, session_id: int, local_host: str, local_port: int) -> bool:
         """
@@ -379,7 +379,7 @@ class RPCSessions(ContextBase):
         """
         response = self._context.call(self.RING_PUT, [session_id, data])
 
-        return int(response[constants.B_WRITE_COUNT]) if response.isdigit() else -1
+        return int(response[constants.B_WRITE_COUNT]) if response[constants.B_WRITE_COUNT].isdigit() else -1
 
     def ring_last(self, session_id: int) -> int:
         """
