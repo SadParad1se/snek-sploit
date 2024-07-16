@@ -3,7 +3,7 @@ import time
 from snek_sploit import MetasploitClient, ModuleType, SessionInformation
 
 
-if __name__ == "__main__":
+def main():
     # Initialize client
     client = MetasploitClient("msf", "root", disable_https_warnings=True)
 
@@ -23,3 +23,7 @@ if __name__ == "__main__":
     # Execute in shell
     result = shell.execute("whoami")
     print(result)
+
+
+if __name__ == "__main__":
+    main()
