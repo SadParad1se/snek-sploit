@@ -5,14 +5,7 @@ def main():
     client = MetasploitClient("msf", "root", disable_https_warnings=True)
     console = client.consoles.create()
 
-    commands = [
-        "use multi/handler",
-        "set PAYLOAD python/shell_reverse_tcp",
-        "set LHOST 0.0.0.0",
-        "set LPORT 4444",
-        "run -z",
-    ]
-    result = console.execute("\n".join(commands))
+    result = console.execute("db_nmap 127.0.0.1")
     print(result)
 
 
