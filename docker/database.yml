@@ -1,4 +1,4 @@
-development: &pgsql
+production:
   adapter: postgresql
   host: <%= ENV['METASPLOIT_DB_HOST'] %>
   port: <%= ENV['METASPLOIT_DB_PORT'] %>
@@ -8,6 +8,3 @@ development: &pgsql
   reconnect: true
   prepared_statements: <%= ENV['METASPLOIT_DB_PREPARED_STATEMENTS'] %>
   advisory_locks: <%= ENV['METASPLOIT_DB_ADVISORY_LOCKS'] %>
-
-production: &production
-  <<: *pgsql
