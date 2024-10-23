@@ -1,13 +1,12 @@
 from snek_sploit import MetasploitClient
 
 
-def main():
-    client = MetasploitClient("msf", "root", disable_https_warnings=True)
-    console = client.consoles.create()
+# Initialize the MSF client
+client = MetasploitClient("msf", "root", disable_https_warnings=True)
 
-    result = console.execute("db_nmap 127.0.0.1")
-    print(result)
+# Create a new console
+console = client.consoles.create()
 
-
-if __name__ == "__main__":
-    main()
+# Execute a command in the console and wait for the output
+result = console.execute("db_nmap 127.0.0.1")
+print(result)
