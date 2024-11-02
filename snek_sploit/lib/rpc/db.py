@@ -14,6 +14,7 @@ class CrackedCredentialOptions:
 
 @dataclass
 class CredentialOptions:
+    jtr_format: str
     origin_type: str  # TODO: probably enum
     address: str
     port: int
@@ -21,6 +22,11 @@ class CredentialOptions:
     protocol: str
     module_fullname: str
     workspace_id: int
+    task_id: int
+    filename: str
+    user_id: int
+    session_id: int
+    post_reference_name: str
     private_data: str
     private_type: str  # TODO: probably enum
     username: str
@@ -44,7 +50,12 @@ class AnalyzeHost:
     pass
 
 
-# TODO unfinished, untested
+# TODO: references
+#  https://docs.metasploit.com/api/Msf/RPC/RPC_Db.html#create_credential
+#  https://github.com/rapid7/metasploit-credential/blob/master/lib/metasploit/credential/creation.rb#L107
+#  https://github.com/rapid7/metasploit-framework/blob/master/lib/msf/core/rpc/v10/rpc_db.rb
+
+# TODO: unfinished, untested
 class RPCDB(ContextBase):
     """
     https://docs.metasploit.com/api/Msf/RPC/RPC_Db.html
