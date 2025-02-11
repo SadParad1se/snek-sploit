@@ -47,7 +47,7 @@ jobs:
         with:
           context: ./metasploit-framework
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64  # ,linux/arm64
           tags: |
             sadparad1se/metasploit-framework:${{ steps.metasploit_setup.outputs.latest_tag }}
             sadparad1se/metasploit-framework:${{ steps.metasploit_setup.outputs.latest_minor_tag }}
@@ -66,7 +66,7 @@ jobs:
         with:
           context: .
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64  # ,linux/arm64
           tags: |
             sadparad1se/metasploit-framework:rpc-${{ steps.metasploit_setup.outputs.latest_tag }}
             sadparad1se/metasploit-framework:rpc-${{ steps.metasploit_setup.outputs.latest_minor_tag }}
